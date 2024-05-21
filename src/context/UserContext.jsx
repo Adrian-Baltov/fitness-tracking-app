@@ -30,7 +30,7 @@ export function UserProvider({ children }) {
             getUserData(user.uid).then((data) => {
                 setUserData(data);
                 setLoading(false);
-                updateUser(data.username, { firstName: 'John', lastName: 'Doe' });
+              
             }).catch((error) => {
                 setError(error);
                 setLoading(false);
