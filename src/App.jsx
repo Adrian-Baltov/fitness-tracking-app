@@ -10,38 +10,50 @@ import {
 import UserProfile from './components/userProfile/UserProfile'
 import { useNavigate } from 'react-router-dom'
 import AuthPage from './views/AuthPage'
+import { Header, NavBar } from './components'
+import styles from './App.module.css'
 
 
 
 function App() {
+
+  const navData = [
+    { title: 'Home', route: '/' },
+    { title: 'Dashboard', route: '/dashboard' },
+    { title: 'Exercises', route: '/exercises' },
+    { title: 'Goals', route: '/goals' },
+    { title: 'Logout', route: '/logout' },
+  ];
   const { fetchExercises, exercises } = useExercise()
+  const { appContainer, container, navBarContainer, content } = styles
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { userData } = useUser();
 
   return (
     <>
+      <div className={appContainer}>
+        <Header />
+        <div className={container}>
+          <div className={navBarContainer}>
 
-      <Routes>  
-      
-        <Route path='/' element={<div>Home<div className="card-actions justify-end">
-        {!user ? <button onClick={() => navigate('/auth')}>Go to Auth</button> : <><p>Welcome: {userData?.username}</p><button onClick={() => navigate('/user-profile')}>Go to User Profile</button><button onClick={logout}>Logout</button></>}
-          </div></div>} /> 
-         <Route  path='/user-profile' element={<Authenticated><UserProfile/></Authenticated>} />
-         <Route path='/auth' element={<AuthPage />} />
-      
-      </Routes>
-      {/* <div className="card w-96 bg-base-100 shadow-xl">
-        <figure><img src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.jpg" alt="Shoes" /></figure>
-        <div className="card-body">
-          <h2 className="card-title">Shoes!</h2>
-          <p>If a dog chews shoes whose shoes does he choose?</p>
-          <div className="card-actions justify-end">
-            <button className="btn btn-primary" onClick={() => fetchExercises()}>Buy Now</button>
+            <NavBar items={navData} />
           </div>
-        </div>
-      </div> */}
+          <div className={content}></div>
 
+          <Routes>
+            <Route path='/' element={<div>Home<div className="card-actions justify-end">
+              {!user ? <button onClick={() => navigate('/auth')}>Go to Auth</button> : <><p>Welcome: {userData?.username}</p><button onClick={() => navigate('/user-profile')}>Go to User Profile</button><button onClick={logout}>Logout</button></>}
+            </div></div>} />
+            <Route path='/user-profile' element={<Authenticated><UserProfile /></Authenticated>} />
+            <Route path='/auth' element={<AuthPage />} />
+            <Route path='/dashboard' element={<div>Dashboard</div>} />
+            <Route path='/exercises' element={<div>Exercises</div>} />
+            <Route path='/goals' element={<div>Goals</div>} />
+            <Route path='/' element={<div>Home</div>} />
+          </Routes>
+        </div>
+      </div>
 
     </>
 
