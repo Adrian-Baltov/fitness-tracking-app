@@ -22,7 +22,7 @@ function App() {
     { title: 'Dashboard', route: '/dashboard' },
     { title: 'Exercises', route: '/exercises' },
     { title: 'Goals', route: '/goals' },
-    { title: 'Logout', route: '/logout' },
+    { title: 'Logout', route: '/' },
   ];
   const { fetchExercises, exercises } = useExercise()
   const { appContainer, container, navBarContainer, content } = styles
@@ -37,7 +37,7 @@ function App() {
         <div className={container}>
           <div className={navBarContainer}>
 
-            <NavBar items={navData} />
+            <NavBar items={navData} logout={logout} />
           </div>
           <div className={content}></div>
 
