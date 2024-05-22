@@ -1,0 +1,10 @@
+.container {
+    height: 90px;
+    width: 100%;
+    display: flex;
+    background: rgb(99, 99, 99);
+    /* position: fixed; */
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 2px solid rgb(210, 255, 184);
+}
