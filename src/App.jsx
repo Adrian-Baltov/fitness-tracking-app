@@ -1,23 +1,23 @@
 import Authenticated from './hoc/Authenticated'
 import './App.css'
 import { Route, Routes } from 'react-router-dom'
-import { useEffect, useState } from 'react'
 import {
   useExercise,
   useGoal,
+  useUser,
+  useAuth
 } from './context'
-import { useAuth } from './context/AuthContext'
 import UserProfile from './components/userProfile/UserProfile'
 import { useNavigate } from 'react-router-dom'
-import { useUser } from './context/UserContext'
-
+import AuthPage from './views/AuthPage'
 
 
 
 function App() {
   const { fetchExercises, exercises } = useExercise()
   const navigate = useNavigate();
-
+  const { user, logout } = useAuth();
+  const { userData } = useUser();
 
   return (
     <>
@@ -25,11 +25,10 @@ function App() {
       <Routes>  
       
         <Route path='/' element={<div>Home<div className="card-actions justify-end">
-           
-            <button onClick={() => navigate('/user-profile')}>Go to User Profile</button>
+        {!user ? <button onClick={() => navigate('/auth')}>Go to Auth</button> : <><p>Welcome: {userData?.username}</p><button onClick={() => navigate('/user-profile')}>Go to User Profile</button><button onClick={logout}>Logout</button></>}
           </div></div>} /> 
-         <Route  path='/user-profile' element={<UserProfile/>} />
-        <Route path='/auth' element={<div>Auth</div>} />
+         <Route  path='/user-profile' element={<Authenticated><UserProfile/></Authenticated>} />
+         <Route path='/auth' element={<AuthPage />} />
       
       </Routes>
       {/* <div className="card w-96 bg-base-100 shadow-xl">
