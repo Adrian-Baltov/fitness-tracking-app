@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { db } from '../../firebase/firebase-config';
-import { ref, set, update, remove, onValue, get, query, orderByChild, equalTo } from "firebase/database";
+import { ref, set, update, remove, get, query, orderByChild, equalTo } from "firebase/database";
 import { useAuth } from './AuthContext';
 
 const UserContext = createContext();
@@ -58,9 +58,14 @@ export function UserProvider({ children }) {
     };
 
     // Function to create a user 
-    const createUser = (username, uid, email, firstName, lastName, role = 'basic', isBlocked = false) => {
-        return set(ref(db, `users/${username}`), { username, uid, email, firstName, lastName, role, isBlocked, friends: [], createdOn: new Date() });
+    const createUser = (username, uid, email, firstName, lastName, phone, role = 'basic', isBlocked = false, ) => {
+        return set(ref(db, `users/${username}`), { username, uid, email, firstName, lastName, phone, role, isBlocked, friends: [], createdOn: new Date() });
     };
+
+    const getUsers = async () => {
+        const snapshot = await get(ref(db, 'users'));
+        return Object.entries(snapshot.val());
+    }
 
     // Context value containing state and functions
     const valueData = {
@@ -71,7 +76,7 @@ export function UserProvider({ children }) {
         updateUser,
         deleteUser,
         getUserByName,
-        createUser,
+        getUsers
     };
 
     return (
