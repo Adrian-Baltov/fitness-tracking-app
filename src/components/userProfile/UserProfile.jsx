@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { useUser } from "../../context/UserContext.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
-import { ref, get, set } from "firebase/database";
+import { get, set } from "firebase/database";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { deleteObject } from "firebase/storage";
+import { storage } from "../../../firebase/firebase-config";
 import backgroundImage from '../../assets/background.jpg';
 const UserProfile = () => {
     const user = useUser();
@@ -17,6 +20,9 @@ const UserProfile = () => {
     const [userWeight, setUserWeight] = useState('');
     const [isChanged, setIsChanged] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [profilePicUrl, setProfilePicUrl] = useState('');
+    const [file, setFile] = useState(null);
+
 
     function isValidEmail(email) {
         const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -53,6 +59,7 @@ const UserProfile = () => {
             setUserUsername(userData.username);
             setUserFirstName(userData.firstName);
             setUserLastName(userData.lastName);
+            setProfilePicUrl(userData.profilePicUrl);
         }
 
         if (!authUser || !user.userData) {
@@ -61,6 +68,8 @@ const UserProfile = () => {
             setIsLoading(false);
         }
     }, [userData])
+
+
 
 
     /*
@@ -107,27 +116,79 @@ const UserProfile = () => {
     }
 
 
+    const handleUploadProfilePicture = async (e) => {
+        e.preventDefault();
+        if (file) {
+            try {
 
+                const storageRef = ref(storage, `profilePictures/${user.userData.username}/profilePicture`);
+
+              try {
+                   await deleteObject(storageRef)
+              } catch (error) {
+                
+              }  
+        
+
+
+                await uploadBytes(storageRef, file);
+
+                const downloadUrl = await getDownloadURL(storageRef);
+                user.updateUser(user.userData.username, { profilePicUrl: downloadUrl });
+
+                console.log('Uploaded a blob or file!');
+
+            } catch (error) {
+                console.log(error)
+            }
+
+        }
+
+    }
 
 
     return (
-        <div className="flex fixed inset-0 bg-cover bg-center items-center justify-center "
-            style={{ backgroundImage: `url(${backgroundImage})` }} >
+        <div className="flex  justify-center w-screen" >
 
 
 
-            <div className="flex w-6/12 h-5/6  justify-center items-center" >
+            <div className="flex w-3/6 h-5/6 justify-center items-center  h-screen" >
 
 
-                <div className="  glass relative flex justify-center items-center w-full h-5/6">
+                <div className="  glass relative flex justify-center items-center w-full h-5/6 rounded-xl">
+
                     {authUser.uid === user.userData?.uid ?
-                        <form className="flex flex-col items-center justify-center space-y-4"> <h1>User Profile</h1>
+
+
+                        <form className="flex flex-col items-center justify-center space-y-4 ">
+                            <div className="avatar border-2 border-gray-500 rounded-full">
+                                <div className="w-48 rounded-full bg-black">
+                                    <img src={`${profilePicUrl}`} alt='No file' className="object-cover w-full h-full rounded-full" />
+                                </div>
+                            </div>
+
+
+
+                            <input type="file" className="file-input file-input-bordered w-full max-w-xs" onChange={((e) => {
+                                const file = e.target.files[0];
+                                setFile(file);
+
+                                const url = URL.createObjectURL(file);
+
+                                setProfilePicUrl(url);
+                              
+                            }
+                            )} />
+                            {profilePicUrl && <span> <button type="submit" className="submit-button" onClick={(e) => handleUploadProfilePicture(e)}>Upload</button></span>}
+                            <h1>User Profile</h1>
                             <label className="input input-bordered flex items-center gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4 opacity-70"><path d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" /><path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" /></svg>
                                 <span className="label-text">Email</span>
                                 <input type="text" className="grow" placeholder="Email" value={userEmail} onChange={(e) => handleOnChangeEmail(e)} />
 
                             </label>
+
+
                             <div className="divider divider-neutral"> </div>
                             <label className="input input-bordered flex items-center gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4 opacity-70"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" /></svg>
@@ -149,10 +210,7 @@ const UserProfile = () => {
                                 <input type="text" className="grow" placeholder="Last Name" value={userLastName} onChange={(e) => handleOnChangeUserLastName(e)} />
 
                             </label>
-                            {isLoading && <> <span className="loading loading-ring loading-xs"></span>
-                                <span className="loading loading-ring loading-sm"></span>
-                                <span className="loading loading-ring loading-md"></span>
-                                <span className="loading loading-ring loading-lg"></span></>}{isChanged && <button className="btn btn-primary bg-transparent border-transparent text-white" onClick={() => handleSave()} >Save</button>}
+                            {isChanged && <button className="btn btn-primary bg-transparent border-transparent text-white" onClick={() => handleSave()} >Save</button>}
                         </form>
 
 
