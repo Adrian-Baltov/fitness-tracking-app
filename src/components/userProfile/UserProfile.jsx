@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useUser } from "../../context/UserContext.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { get, set } from "firebase/database";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { deleteObject } from "firebase/storage";
 import { storage } from "../../../firebase/firebase-config";
 import backgroundImage from '../../assets/background.jpg';
@@ -21,7 +21,9 @@ const UserProfile = () => {
     const [isChanged, setIsChanged] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [profilePicUrl, setProfilePicUrl] = useState('');
+    const [profilePicUploadProggres, setProfilePicUploadProggres] = useState(0);
     const [file, setFile] = useState(null);
+    const [isUploading, setIsUploading] = useState(false);
 
 
     function isValidEmail(email) {
@@ -121,26 +123,43 @@ const UserProfile = () => {
         if (file) {
             try {
 
+                setIsUploading(true);
+
                 const storageRef = ref(storage, `profilePictures/${user.userData.username}/profilePicture`);
 
-              try {
-                   await deleteObject(storageRef)
-              } catch (error) {
-                
-              }  
-        
+                try {
+                    await deleteObject(storageRef)
+                } catch (error) {
+                    // left empty intentionally
+                    console.log(error)
+                }
+                const uploadTask = uploadBytesResumable(storageRef, file);
+
+                uploadTask.on('state_changed',
+                    (snapshot) => {
+                        setProfilePicUploadProggres((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+
+                    },
 
 
-                await uploadBytes(storageRef, file);
 
-                const downloadUrl = await getDownloadURL(storageRef);
-                user.updateUser(user.userData.username, { profilePicUrl: downloadUrl });
+                    async () => {
+                        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                        user.updateUser(user.userData.username, { profilePicUrl: downloadURL });
+                        setProfilePicUrl(downloadURL);
+                        setIsUploading(false);
+                        setProfilePicUploadProggres(0);
+                    }
 
-                console.log('Uploaded a blob or file!');
+
+                )
+
 
             } catch (error) {
-                console.log(error)
+                console.error('Error uploading profile picture:', error);
+
             }
+            setFile(null);
 
         }
 
@@ -176,10 +195,15 @@ const UserProfile = () => {
                                 const url = URL.createObjectURL(file);
 
                                 setProfilePicUrl(url);
-                              
+
                             }
                             )} />
-                            {profilePicUrl && <span> <button type="submit" className="submit-button" onClick={(e) => handleUploadProfilePicture(e)}>Upload</button></span>}
+                            {file && <span> <button type="submit" className="submit-button" onClick={(e) => handleUploadProfilePicture(e)}>Upload </button></span>}
+                            {profilePicUploadProggres && profilePicUploadProggres < 100 ? (
+                                <div className="radial-progress" style={{ "--value": profilePicUploadProggres }} role="progressbar">
+                                    {`${profilePicUploadProggres.toFixed(0)}%`}
+                                </div>
+                            ) : null}
                             <h1>User Profile</h1>
                             <label className="input input-bordered flex items-center gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4 opacity-70"><path d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" /><path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" /></svg>
