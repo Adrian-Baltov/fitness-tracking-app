@@ -4,7 +4,7 @@ import { useAuth } from '../context';
 
 const ExercisePage = () => {
     const { exercises, loading, error, fetchExercises, createExercise, updateExercise, deleteExercise } = useExercise();
-    const [form, setForm] = useState({ name: '', description: '', duration: '', stepsTaken: '' });
+    const [form, setForm] = useState({ title: '', description: '', duration: '', stepsTaken: '' });
     const [isEditing, setIsEditing] = useState(false);
     const [currentExerciseId, setCurrentExerciseId] = useState(null);
     const { user } = useAuth();
@@ -23,8 +23,8 @@ const ExercisePage = () => {
     }, [loading, exercises, error]);
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setForm(prevForm => ({ ...prevForm, [name]: value }));
+        const { title, value } = e.target;
+        setForm(prevForm => ({ ...prevForm, [title]: value }));
     };
 
     const handleSubmit = (e) => {
@@ -47,7 +47,7 @@ const ExercisePage = () => {
     };
 
     const handleEdit = (exercise) => {
-        setForm({ name: exercise.name, description: exercise.description, duration: exercise.duration, stepsTaken: exercise.stepsTaken });
+        setForm({ title: exercise.title, description: exercise.description, duration: exercise.duration, stepsTaken: exercise.stepsTaken });
         setCurrentExerciseId(exercise.id);
         setIsEditing(true);
     };
@@ -61,7 +61,7 @@ const ExercisePage = () => {
     };
 
     const resetForm = () => {
-        setForm({ name: '', description: '', duration: '', stepsTaken: '' });
+        setForm({ title: '', description: '', duration: '', stepsTaken: '' });
         setIsEditing(false);
         setCurrentExerciseId(null);
     };
@@ -72,48 +72,33 @@ const ExercisePage = () => {
     if (!exercises.length) return <p>No exercises found.</p>;
 
     const userExercises = exercises.filter(exercise => exercise.userId === user.uid);
+    const inputFieldsData = [
+        { type: 'text', title: 'title', placeholder: 'Title', value: 'title', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
+        { type: 'text', title: 'description', placeholder: 'Description', value: 'description', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
+        { type: 'text', title: 'duration', placeholder: 'Duration', value: 'duration', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
+        { type: 'text', title: 'stepsTaken', placeholder: 'Steps Taken', value: 'stepsTaken', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
+    ]
+
+    const renderInputFields = (inputFieldsData) => {
+        return inputFieldsData.map((inputField, index) => {
+            return <input
+                key={index}
+                type={inputField.type}
+                title={inputField.title}
+                placeholder={inputField.placeholder}
+                value={form[inputField.value]}
+                onChange={handleInputChange}
+                required={inputField.required}
+                className={inputField.className} />
+        });
+    }
 
     return (
         <div className="container mx-auto p-4">
             <h2 className="text-2xl font-bold mb-4">Exercises</h2>
             <form onSubmit={handleSubmit} className="mb-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <input
-                        type="text"
-                        name="name"
-                        placeholder="Name"
-                        value={form.name}
-                        onChange={handleInputChange}
-                        required
-                        className="input input-bordered w-full"
-                    />
-                    <input
-                        type="text"
-                        name="description"
-                        placeholder="Description"
-                        value={form.description}
-                        onChange={handleInputChange}
-                        required
-                        className="input input-bordered w-full"
-                    />
-                    <input
-                        type="text"
-                        name="duration"
-                        placeholder="Duration (mins)"
-                        value={form.duration}
-                        onChange={handleInputChange}
-                        required
-                        className="input input-bordered w-full"
-                    />
-                    <input
-                        type="text"
-                        name="stepsTaken"
-                        placeholder="Steps Taken"
-                        value={form.stepsTaken}
-                        onChange={handleInputChange}
-                        required
-                        className="input input-bordered w-full"
-                    />
+                    {renderInputFields(inputFieldsData)}
                 </div>
                 <div className="mt-4 flex space-x-2">
                     <button type="submit" className="btn btn-primary">{isEditing ? 'Update Exercise' : 'Create Exercise'}</button>
@@ -133,7 +118,7 @@ const ExercisePage = () => {
                 <tbody>
                     {userExercises.map(exercise => (
                         <tr key={exercise.id}>
-                            <td>{exercise.name}</td>
+                            <td>{exercise.title}</td>
                             <td>{exercise.description}</td>
                             <td>{exercise.duration} minutes</td>
                             <td>{exercise.stepsTaken}</td>
