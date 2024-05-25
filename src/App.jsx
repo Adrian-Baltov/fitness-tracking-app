@@ -12,17 +12,16 @@ import AuthPage from './views/AuthPage'
 import { Header, NavBar } from './components'
 import styles from './App.module.css'
 import ExercisePage from './views/ExercisePage'
-
-
+import { FaHome, FaDumbbell, FaBullseye, FaSignOutAlt } from 'react-icons/fa';
 
 function App() {
 
   const navData = [
-    { title: 'Home', route: '/' },
-    { title: 'Dashboard', route: '/dashboard' },
-    { title: 'Exercises', route: '/exercises' },
-    { title: 'Goals', route: '/goals' },
-    { title: 'Logout', route: '/' },
+    { title: 'Home', route: '/', icon: <FaHome /> },
+    { title: 'Dashboard', route: '/dashboard', icon: <FaHome /> },
+    { title: 'Exercises', route: '/exercises', icon: <FaDumbbell /> },
+    { title: 'Goals', route: '/goals', icon: <FaBullseye /> },
+    { title: 'Logout', route: '/', icon: <FaSignOutAlt /> },
   ];
 
   const { appContainer, container, navBarContainer, content } = styles
