@@ -4,7 +4,7 @@ import { useAuth } from "../../context/AuthContext.jsx";
 import { get, set } from "firebase/database";
 import { ref, uploadBytes, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { deleteObject } from "firebase/storage";
-import { storage } from "../../../firebase/firebase-config";
+import { storage, storageRef } from "../../../firebase/firebase-config";
 import backgroundImage from '../../assets/background.jpg';
 const UserProfile = () => {
     const user = useUser();
@@ -127,11 +127,11 @@ const UserProfile = () => {
 
                 const storageRef = ref(storage, `profilePictures/${user.userData.username}/profilePicture`);
 
+                
                 try {
                     await deleteObject(storageRef)
                 } catch (error) {
-                    // left empty intentionally
-                    console.log(error)
+                    console.log("Error deleting old profile picture:", error);
                 }
                 const uploadTask = uploadBytesResumable(storageRef, file);
 
@@ -140,20 +140,27 @@ const UserProfile = () => {
                         setProfilePicUploadProggres((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
 
                     },
-
-
+                    (error) => {
+                        console.log("Error uploading file:", error);
+                    },
 
                     async () => {
-                        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                        user.updateUser(user.userData.username, { profilePicUrl: downloadURL });
-                        setProfilePicUrl(downloadURL);
-                        setIsUploading(false);
-                        setProfilePicUploadProggres(0);
+                        try {
+                            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                            user.updateUser(user.userData.username, { profilePicUrl: downloadURL });
+                            setProfilePicUrl(downloadURL);
+                            setIsUploading(false);
+                            setProfilePicUploadProggres(0);
+                        } catch (error) {
+                            console.log("Error getting download URL:", error);
+                        }
                     }
-
 
                 )
 
+       
+   
+                    
 
             } catch (error) {
                 console.error('Error uploading profile picture:', error);
