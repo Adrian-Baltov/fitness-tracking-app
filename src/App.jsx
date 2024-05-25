@@ -1,5 +1,4 @@
 import Authenticated from './hoc/Authenticated'
-import './App.css'
 import { Route, Routes } from 'react-router-dom'
 import {
   useExercise,
