@@ -12,7 +12,7 @@ import { useNavigate } from 'react-router-dom'
 import AuthPage from './views/AuthPage'
 import { Header, NavBar } from './components'
 import styles from './App.module.css'
-import ExercisePage from './components/excersisePage/ExcersisePage'
+import ExercisePage from './views/ExercisePage'
 
 
 
