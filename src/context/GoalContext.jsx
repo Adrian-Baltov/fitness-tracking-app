@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState } from 'react';
 import { db } from '../../firebase/firebase-config';
 import { ref, push, update, remove } from "firebase/database";
+import { useAuth } from './AuthContext'
 
 const GoalContext = createContext();
 
@@ -8,6 +9,7 @@ export function GoalProvider({ children }) {
     const [goals, setGoals] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const { user } = useAuth();
 
     // Function to get goals data by UID
     const fetchGoals = async () => {
@@ -17,9 +19,11 @@ export function GoalProvider({ children }) {
     // Function to create a new goal
     const createGoal = (data) => {
         const goalRef = ref(db, 'goals');
-
-        return push(goalRef, data);
+        const userId = user ? user.uid : null;
+        const goalDataWithUserId = { ...data, userId };
+        return push(goalRef, goalDataWithUserId);
     };
+
 
     // Function to update existing goal data
     const updateGoal = (goalId, data) => {
