@@ -8,12 +8,3 @@
   display: flex;
   height: 100%;
 }
-
-.navBarContainer {
-  display: flex;
-  height: 100%;
-  width: 250px;
-  background: rgb(131, 131, 131);
-  border-right: 2px solid rgb(210, 255, 184);
-  padding: 20px;
-}
