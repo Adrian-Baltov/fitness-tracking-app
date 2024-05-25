@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { NavLink } from "react-router-dom";
 import PropTypes from "prop-types";
-
+import { FaSignOutAlt } from 'react-icons/fa';
 
 const NavBar = ({ items, logout }) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
-    const filteredItems = items.filter(item => item.title !== 'Logout');
     const logoutItem = items.find(item => item.title === 'Logout');
 
     return (
@@ -17,7 +16,7 @@ const NavBar = ({ items, logout }) => {
             onMouseLeave={() => setIsExpanded(false)}
         >
             <div className="flex-grow">
-                {filteredItems.map((item) => (
+                {items.map((item) => (
                     <NavLink
                         className="group flex items-center space-x-4 p-2 my-2 w-full hover:bg-base-300 rounded"
                         key={item.title}
@@ -28,19 +27,18 @@ const NavBar = ({ items, logout }) => {
                     </NavLink>
                 ))}
             </div>
-            {logoutItem && (
-                <div className="mb-4">
-                    <NavLink
-                        className="group flex items-center space-x-4 p-2 my-2 w-full hover:bg-base-300 rounded"
-                        key={logoutItem.title}
-                        to={logoutItem.route}
-                        onClick={logout}
-                    >
-                        <span className="text-xl">{logoutItem.icon}</span>
-                        <span className={`whitespace-nowrap ${isExpanded ? 'inline' : 'hidden'}`}>{logoutItem.title}</span>
-                    </NavLink>
-                </div>
-            )}
+
+            <div className="mb-4">
+                <NavLink
+                    className="group flex items-center space-x-4 p-2 my-2 w-full hover:bg-base-300 rounded"
+                    to={'./'}
+                    onClick={logout}
+                >
+                    <span className="text-xl"><FaSignOutAlt /></span>
+                    <span className={`whitespace-nowrap ${isExpanded ? 'inline' : 'hidden'}`}>{'Logout'}</span>
+                </NavLink>
+            </div>
+
         </div>
     );
 };

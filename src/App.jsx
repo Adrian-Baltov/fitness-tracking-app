@@ -21,7 +21,6 @@ function App() {
     { title: 'Dashboard', route: '/dashboard', icon: <FaHome /> },
     { title: 'Exercises', route: '/exercises', icon: <FaDumbbell /> },
     { title: 'Goals', route: '/goals', icon: <FaBullseye /> },
-    { title: 'Logout', route: '/', icon: <FaSignOutAlt /> },
   ];
 
   const { appContainer, container, navBarContainer, content } = styles
