@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom'
 import AuthPage from './views/AuthPage'
 import { Header, NavBar } from './components'
 import styles from './App.module.css'
+import ExercisePage from './components/excersisePage/ExcersisePage'
 
 
 
@@ -48,7 +49,7 @@ function App() {
             <Route path='/user-profile' element={<Authenticated><UserProfile /></Authenticated>} />
             <Route path='/auth' element={<AuthPage />} />
             <Route path='/dashboard' element={<div>Dashboard</div>} />
-            <Route path='/exercises' element={<div>Exercises</div>} />
+            <Route path='/exercises' element={<ExercisePage />} />
             <Route path='/goals' element={<div>Goals</div>} />
             <Route path='/' element={<div>Home</div>} />
           </Routes>
