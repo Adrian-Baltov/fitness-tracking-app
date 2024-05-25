@@ -6,11 +6,9 @@ import { FaSignOutAlt } from 'react-icons/fa';
 const NavBar = ({ items, logout }) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
-    const logoutItem = items.find(item => item.title === 'Logout');
-
     return (
         <div
-            className={`flex flex-col items-center bg-base-200 h-full transition-all duration-300 ${isExpanded ? 'w-48' : 'w-16'
+            className={`flex flex-col items-center bg-base-200 h-full transition-all overflow-x-hidden duration-300 ${isExpanded ? 'w-48' : 'w-16'
                 }`}
             onMouseEnter={() => setIsExpanded(true)}
             onMouseLeave={() => setIsExpanded(false)}
@@ -18,7 +16,7 @@ const NavBar = ({ items, logout }) => {
             <div className="flex-grow">
                 {items.map((item) => (
                     <NavLink
-                        className="group flex items-center space-x-4 p-2 my-2 w-full hover:bg-base-300 rounded"
+                        className="group flex items-center space-x-4 p-2 my-2 w-full hover:bg-base-300 rounded "
                         key={item.title}
                         to={item.route}
                     >

@@ -33,10 +33,7 @@ function App() {
       <div className={appContainer}>
         <Header />
         <div className={container}>
-          <div className={navBarContainer}>
-
-            <NavBar items={navData} logout={logout} />
-          </div>
+          <NavBar items={navData} logout={logout} />
           <div className={content}></div>
 
           <Routes>

@@ -38,7 +38,7 @@ const Header = () => {
     }, [user]);
 
     return (
-        <div className={container}>
+        <div className={`${container} bg-base-200`} >
             <div>Logo</div>
             {user ? (
                 <div className={dropdownContainer} ref={dropdownRef}>
