@@ -25,7 +25,7 @@ function App() {
     { title: 'Goals', route: '/goals' },
     { title: 'Logout', route: '/' },
   ];
-  const { fetchExercises, exercises } = useExercise()
+
   const { appContainer, container, navBarContainer, content } = styles
   const navigate = useNavigate();
   const { user, logout } = useAuth();
