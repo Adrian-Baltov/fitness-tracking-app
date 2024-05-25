@@ -1,7 +1,9 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { db } from '../../firebase/firebase-config';
-import { ref, update, remove, get, query, push } from "firebase/database";
-import { fetchData } from '../utils/utils';
+import { ref, get, push, update, remove } from 'firebase/database';
+import { useAuth } from './AuthContext'
+
+
 
 const ExerciseContext = createContext();
 
@@ -9,33 +11,48 @@ export function ExerciseProvider({ children }) {
     const [exercises, setExercises] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const { user } = useAuth();
 
     // Function to fetch all exercises data 
-    const fetchExercises = async () => {
-        console.log('fetching exercises');
-        await fetchData('exercises', setLoading, setExercises, setError);
-
-    }
+    const fetchExercises = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const snapshot = await get(ref(db, 'exercises'));
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                const exercisesList = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+                setExercises(exercisesList);
+            } else {
+                setExercises([]);
+            }
+        } catch (err) {
+            setError(err);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
     // Function to create a new exercise
     const createExercise = (data) => {
         const exerciseRef = ref(db, 'exercises');
-
-        return push(exerciseRef, data);
+        const userId = user ? user.uid : null;
+        const exerciseDataWithUserId = { ...data, userId };
+        return push(exerciseRef, exerciseDataWithUserId);
     };
 
     // Function to update existing exercise data
-    const updateExercise = (exerciseId, data) => {
+    const updateExercise = useCallback((exerciseId, data) => {
         return update(ref(db, `exercises/${exerciseId}`), data);
-    };
+    }, []);
 
     // Function to delete an exercise
-    const deleteExercise = (exerciseId) => {
+    const deleteExercise = useCallback((exerciseId) => {
         return remove(ref(db, `exercises/${exerciseId}`));
-    };
+    }, []);
 
     // Context value containing state and functions
-    const valueData = {
+    const valueData = useMemo(() => ({
         exercises,
         loading,
         error,
@@ -43,7 +60,7 @@ export function ExerciseProvider({ children }) {
         createExercise,
         updateExercise,
         deleteExercise,
-    };
+    }), [exercises, loading, error, fetchExercises, createExercise, updateExercise, deleteExercise]);
 
     return (
         <ExerciseContext.Provider value={valueData}>
@@ -55,4 +72,4 @@ export function ExerciseProvider({ children }) {
 // Hook to use ExerciseContext
 export const useExercise = () => {
     return useContext(ExerciseContext);
-}
+};
