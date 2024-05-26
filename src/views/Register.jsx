@@ -11,6 +11,8 @@ export default function Register() {
     firstName: '',
     lastName: '',
     phone: '',
+    weight: '',
+    height: '',
   });
   
   const [error, setError] = useState(null);
@@ -109,7 +111,7 @@ export default function Register() {
       }
       
       const credential = await register(form.email, form.password);
-      await createUser(form.username, credential.user.uid, credential.user.email, form.firstName, form.lastName, form.phone);
+      await createUser(form.username, credential.user.uid, credential.user.email, form.firstName, form.lastName, form.phone, form.weight, form.height);
       navigate('/');
     } catch (error) {
       if (error.message.includes('auth/email-already-in-use')) {
@@ -150,7 +152,14 @@ export default function Register() {
           <label htmlFor="phone">Phone </label>
           <input className="login-input" value={form.phone} onChange={updateForm('phone')} type="text" name="phone" id="phone" />
         </div>
-
+        <div className="login-inputs">
+          <label htmlFor="weight">Weight <i>(in kg)</i></label>
+          <input className="login-input" value={form.weight} onChange={updateForm('weight')} type="text" name="weight" id="weight" />
+        </div>
+        <div className="login-inputs">
+          <label htmlFor="height">Height <i>(in cm)</i></label>
+          <input className="login-input" value={form.height} onChange={updateForm('height')} type="text" name="height" id="height" />
+          </div>
         <p
           onClick={registerUser}
 

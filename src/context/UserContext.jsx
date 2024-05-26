@@ -58,8 +58,8 @@ export function UserProvider({ children }) {
     };
 
     // Function to create a user 
-    const createUser = (username, uid, email, firstName, lastName, phone, role = 'basic', isBlocked = false, ) => {
-        return set(ref(db, `users/${username}`), { username, uid, email, firstName, lastName, phone, role, isBlocked, friends: [], createdOn: new Date() });
+    const createUser = (username, uid, email, firstName, lastName, phone, weight, height, role = 'basic', isBlocked = false) => {
+        return set(ref(db, `users/${username}`), { username, uid, email, firstName, lastName, phone, weight, height, role, isBlocked, friends: [], createdOn: new Date() });
     };
 
     const getUsers = async () => {
