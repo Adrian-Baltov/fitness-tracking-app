@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState } from 'react';
 import { db } from '../../firebase/firebase-config';
 import { ref, push, update, remove } from "firebase/database";
 import { useAuth } from './AuthContext'
+import { format } from 'date-fns';
 
 const GoalContext = createContext();
 
@@ -20,7 +21,7 @@ export function GoalProvider({ children }) {
     const createGoal = (data) => {
         const goalRef = ref(db, 'goals');
         const userId = user ? user.uid : null;
-        const goalDataWithUserId = { ...data, userId };
+        const goalDataWithUserId = { ...data, userId, createdOn: format(new Date(), 'yyyy-MM-dd HH:mm:ss') };
         return push(goalRef, goalDataWithUserId);
     };
 
