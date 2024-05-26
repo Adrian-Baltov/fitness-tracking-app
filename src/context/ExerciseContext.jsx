@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback, use
 import { db } from '../../firebase/firebase-config';
 import { ref, get, push, update, remove } from 'firebase/database';
 import { useAuth } from './AuthContext'
-
+import { format } from 'date-fns';
 
 
 const ExerciseContext = createContext();
@@ -37,7 +37,7 @@ export function ExerciseProvider({ children }) {
     const createExercise = (data) => {
         const exerciseRef = ref(db, 'exercises');
         const userId = user ? user.uid : null;
-        const exerciseDataWithUserId = { ...data, userId };
+        const exerciseDataWithUserId = { ...data, userId, createdOn: format(new Date(), 'yyyy-MM-dd HH:mm:ss') };
         return push(exerciseRef, exerciseDataWithUserId);
     };
 
