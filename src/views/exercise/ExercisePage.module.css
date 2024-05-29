@@ -1,0 +1,8 @@
+.calendarContainer>div {
+    background-color: rgb(126, 126, 126) !important;
+    color: white;
+}
+
+.calendarContainer>div>div>div>div {
+    background-color: rgb(126, 126, 126) !important;
+}
