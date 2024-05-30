@@ -29,24 +29,30 @@ const ExercisePage = () => {
         console.log('Error:', error);
     }, [loading, exercises, error]);
 
+    useEffect(() => {
+        // Update exercisesForSelectedDate when exercises change
+        const selectedDateString = selectedDate ? selectedDate.toDateString() : null;
+        const exercisesForDate = exercises.filter(ex => selectedDateString && new Date(ex.createdOn).toDateString() === selectedDateString);
+        setExercisesForSelectedDate(exercisesForDate);
+    }, [exercises, selectedDate]);
+
     const handleInputChange = (e) => {
         const { title, value } = e.target;
         setForm(prevForm => ({ ...prevForm, [title]: value, createdOn: format(calendarRef?.current?.getCurrentDateTime(), 'yyyy-MM-dd HH:mm:ss') }));
     };
 
     const handleSubmit = (e) => {
-        console.error(form);
         e.preventDefault();
         if (isEditing) {
             updateExercise(currentExerciseId, form).then(() => {
-                fetchExercises();
+                fetchExercises(); // Refetch exercises after update
                 resetForm();
             }).catch(error => {
                 console.error("Failed to update exercise:", error);
             });
         } else {
             createExercise(form).then(() => {
-                fetchExercises();
+                fetchExercises(); // Refetch exercises after create
                 resetForm();
             }).catch(error => {
                 console.error("Failed to create exercise:", error);
@@ -68,7 +74,7 @@ const ExercisePage = () => {
 
     const handleDelete = (exerciseId) => {
         deleteExercise(exerciseId).then(() => {
-            fetchExercises();
+            fetchExercises(); // Refetch exercises after delete
         }).catch(error => {
             console.error("Failed to delete exercise:", error);
         });
@@ -85,7 +91,6 @@ const ExercisePage = () => {
     if (error) return <p>Error: {error.message}</p>;
     if (!exercises.length) return <p>No exercises found.</p>;
 
-    const userExercises = exercises.filter(exercise => exercise.userId === user.uid);
     const inputFieldsData = [
         { type: 'text', title: 'title', placeholder: 'Title', value: 'title', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
         { type: 'text', title: 'description', placeholder: 'Description', value: 'description', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
@@ -115,35 +120,18 @@ const ExercisePage = () => {
 
     const onDateSelect = (e) => {
         const selected = e.value;
-        console.log(userExercises);
         setSelectedDate(selected);
-        const selectedDateString = selected.toDateString();
-        console.log('Selected Date:', selectedDateString);
-
-        const exercisesForDate = userExercises.filter(ex => new Date(ex.createdOn).toDateString() === selectedDateString);
-        setExercisesForSelectedDate(exercisesForDate);
-
-        if (exercisesForDate.length === 1) {
-            setForm(exercisesForDate[0]);
-            setIsEditing(true);
-            setCurrentExerciseId(exercisesForDate[0].id);
-        } else {
-            setForm({ title: '', description: '', duration: '', calories: '' });
-            setIsEditing(false);
-            setCurrentExerciseId(null);
-        }
     };
 
     const dateTemplate = (date) => {
         const dateObj = new Date(date.year, date.month, date.day);
         const dateString = dateObj.toDateString();
-        const exerciseDate = userExercises.find(ex => new Date(ex.createdOn).toDateString() === dateString);
+        const exerciseDate = exercises.find(ex => new Date(ex.createdOn).toDateString() === dateString);
 
         if (exerciseDate) {
             return (
                 <div style={{ backgroundColor: 'green', borderRadius: '50%', color: 'white', width: '2em', height: '2em', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <div style={{ color: 'white', border: '3px solid red', borderRadius: '50%', padding: '20px' }}>
-
                         {date.day}
                     </div>
                 </div>
