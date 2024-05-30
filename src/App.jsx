@@ -13,6 +13,7 @@ import { Header, NavBar } from './components'
 import styles from './App.module.css'
 import ExercisePage from './views/exercise/ExercisePage'
 import { FaHome, FaDumbbell, FaBullseye, FaTachometerAlt } from 'react-icons/fa';
+import FriendsPage from './views/FriendsPage'
 import 'primereact/resources/themes/saga-blue/theme.css';  // Theme
 import 'primereact/resources/primereact.min.css';          // Core CSS
 import 'primeicons/primeicons.css';                        // Icons
@@ -48,6 +49,7 @@ function App() {
             <Route path='/auth' element={<AuthPage />} />
             <Route path='/dashboard' element={<div>Dashboard</div>} />
             <Route path='/exercises' element={<ExercisePage />} />
+            <Route path='/search/friends' element={<FriendsPage/>} />
             <Route path='/goals' element={<div>Goals</div>} />
             <Route path='/' element={<div>Home</div>} />
           </Routes>

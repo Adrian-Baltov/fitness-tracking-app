@@ -23,3 +23,39 @@ export const fetchData = async (table, setLoading, setData, setError) => {
     }
 
 };
+
+export const getAllUsersArray = async () => {
+    const usersRef = ref(db, 'users');
+    const usersSnapshot = await get(usersRef);
+
+    if (usersSnapshot.exists()) {
+
+
+        const usersArray = Object.entries(usersSnapshot.val()).map(([key, value]) => ({
+
+            ...value
+        }));
+        return usersArray;
+    } else {
+        return [];
+    }
+
+};
+
+export const searchAllUsers = async (search = '') => {
+    try {
+        const usersArray = await getAllUsersArray();
+        if (usersArray) {
+            if (search) {
+                const filteredUsers = usersArray.filter(user => user.username && user.username.toLowerCase().includes(search.toLowerCase()));
+                return filteredUsers;
+            } else {
+                return [];
+            }
+
+        }
+
+    } catch (error) {
+        console.log('Errro searching users: ', error);
+    }
+};   
