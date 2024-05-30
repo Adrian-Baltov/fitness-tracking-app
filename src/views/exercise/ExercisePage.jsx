@@ -11,7 +11,7 @@ const ExercisePage = () => {
     const { calendarContainer } = styles;
     const calendarRef = useRef(null);
     const { exercises, loading, error, fetchExercises, createExercise, updateExercise, deleteExercise } = useExercise();
-    const [form, setForm] = useState({ title: '', description: '', duration: '', stepsTaken: '', createdOn: '' });
+    const [form, setForm] = useState({ title: '', description: '', duration: '', calories: '', createdOn: '' });
     const [isEditing, setIsEditing] = useState(false);
     const [currentExerciseId, setCurrentExerciseId] = useState(null);
     const { user } = useAuth();
@@ -61,7 +61,7 @@ const ExercisePage = () => {
             title: exercise.title,
             description: exercise.description,
             duration: exercise.duration,
-            stepsTaken: exercise.stepsTaken,
+            calories: exercise.calories,
             createdOn: calendarRef?.current?.getCurrentDateTime()
         });
         setCurrentExerciseId(exercise.id);
@@ -77,7 +77,7 @@ const ExercisePage = () => {
     };
 
     const resetForm = () => {
-        setForm({ title: '', description: '', duration: '', stepsTaken: '' });
+        setForm({ title: '', description: '', duration: '', calories: '' });
         setIsEditing(false);
         setCurrentExerciseId(null);
     };
@@ -92,7 +92,7 @@ const ExercisePage = () => {
         { type: 'text', title: 'title', placeholder: 'Title', value: 'title', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
         { type: 'text', title: 'description', placeholder: 'Description', value: 'description', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
         { type: 'text', title: 'duration', placeholder: 'Duration', value: 'duration', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
-        { type: 'text', title: 'stepsTaken', placeholder: 'Steps Taken', value: 'stepsTaken', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
+        { type: 'text', title: 'calories', placeholder: 'Calories', value: 'caloires', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
     ];
 
     const renderInputFields = (inputFieldsData) => {
@@ -130,7 +130,7 @@ const ExercisePage = () => {
             setIsEditing(true);
             setCurrentExerciseId(exercisesForDate[0].id);
         } else {
-            setForm({ title: '', description: '', duration: '', stepsTaken: '' });
+            setForm({ title: '', description: '', duration: '', calories: '' });
             setIsEditing(false);
             setCurrentExerciseId(null);
         }
@@ -183,7 +183,7 @@ const ExercisePage = () => {
                             <th>Name</th>
                             <th>Description</th>
                             <th>Duration</th>
-                            <th>Steps Taken</th>
+                            <th>Calories</th>
                             <th>Date</th>
                             <th>Actions</th>
                         </tr>
@@ -194,7 +194,7 @@ const ExercisePage = () => {
                                 <td>{exercise.title}</td>
                                 <td>{exercise.description}</td>
                                 <td>{exercise.duration} minutes</td>
-                                <td>{exercise.stepsTaken}</td>
+                                <td>{exercise.calories}</td>
                                 <td>{new Date(exercise.createdOn).toLocaleDateString()}</td>
                                 <td>
                                     <button onClick={() => handleEdit(exercise)} className="btn btn-sm btn-warning mr-2">Edit</button>
