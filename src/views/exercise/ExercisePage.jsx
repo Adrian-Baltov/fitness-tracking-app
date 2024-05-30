@@ -5,8 +5,6 @@ import { Calendar } from 'primereact/calendar';
 import styles from './ExercisePage.module.css';
 import { format } from 'date-fns';
 
-//new Date(), 'yyyy-MM-dd HH:mm:ss'
-
 const ExercisePage = () => {
     const { calendarContainer } = styles;
     const calendarRef = useRef(null);
@@ -176,35 +174,38 @@ const ExercisePage = () => {
                 className={calendarContainer}
                 style={{ width: '100%' }}
             />
-            {exercisesForSelectedDate.length > 0 && (
-                <table className="table w-full mt-4">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Description</th>
-                            <th>Duration</th>
-                            <th>Calories</th>
-                            <th>Date</th>
-                            <th>Actions</th>
+            <table className="table w-full mt-4">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Duration</th>
+                        <th>Calories</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {exercisesForSelectedDate.map(exercise => (
+                        <tr key={exercise.id}>
+                            <td>{exercise.title}</td>
+                            <td>{exercise.description}</td>
+                            <td>{exercise.duration} minutes</td>
+                            <td>{exercise.calories}</td>
+                            <td>{new Date(exercise.createdOn).toLocaleDateString()}</td>
+                            <td>
+                                <button onClick={() => handleEdit(exercise)} className="btn btn-sm btn-warning mr-2">Edit</button>
+                                <button onClick={() => handleDelete(exercise.id)} className="btn btn-sm btn-error">Delete</button>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        {exercisesForSelectedDate.map(exercise => (
-                            <tr key={exercise.id}>
-                                <td>{exercise.title}</td>
-                                <td>{exercise.description}</td>
-                                <td>{exercise.duration} minutes</td>
-                                <td>{exercise.calories}</td>
-                                <td>{new Date(exercise.createdOn).toLocaleDateString()}</td>
-                                <td>
-                                    <button onClick={() => handleEdit(exercise)} className="btn btn-sm btn-warning mr-2">Edit</button>
-                                    <button onClick={() => handleDelete(exercise.id)} className="btn btn-sm btn-error">Delete</button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            )}
+                    ))}
+                    {exercisesForSelectedDate.length === 0 && (
+                        <tr>
+                            <td colSpan="6">No exercises found for this date.</td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
         </div>
     );
 };
