@@ -95,7 +95,7 @@ const ExercisePage = () => {
         { type: 'text', title: 'title', placeholder: 'Title', value: 'title', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
         { type: 'text', title: 'description', placeholder: 'Description', value: 'description', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
         { type: 'text', title: 'duration', placeholder: 'Duration', value: 'duration', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
-        { type: 'text', title: 'calories', placeholder: 'Calories', value: 'caloires', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
+        { type: 'text', title: 'calories', placeholder: 'Calories', value: 'calories', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
     ];
 
     const renderInputFields = (inputFieldsData) => {
@@ -167,7 +167,7 @@ const ExercisePage = () => {
                     <tr>
                         <th>Name</th>
                         <th>Description</th>
-                        <th>Duration</th>
+                        <th>Duration (min)</th>
                         <th>Calories</th>
                         <th>Date</th>
                         <th>Actions</th>
