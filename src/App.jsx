@@ -13,6 +13,7 @@ import { Header, NavBar } from './components'
 import styles from './App.module.css'
 import ExercisePage from './views/exercise/ExercisePage'
 import { FaHome, FaDumbbell, FaBullseye, FaTachometerAlt } from 'react-icons/fa';
+import FriendsPage from './views/FriendsPage'
 import 'primereact/resources/themes/saga-blue/theme.css';  // Theme
 import 'primereact/resources/primereact.min.css';          // Core CSS
 import 'primeicons/primeicons.css';                        // Icons
