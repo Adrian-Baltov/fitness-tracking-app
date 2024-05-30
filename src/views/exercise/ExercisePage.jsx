@@ -5,13 +5,14 @@ import { Calendar } from 'primereact/calendar';
 import styles from './ExercisePage.module.css';
 
 const ExercisePage = () => {
-    const { calendarContainer } = styles
+    const { calendarContainer } = styles;
     const { exercises, loading, error, fetchExercises, createExercise, updateExercise, deleteExercise } = useExercise();
     const [form, setForm] = useState({ title: '', description: '', duration: '', stepsTaken: '' });
     const [isEditing, setIsEditing] = useState(false);
     const [currentExerciseId, setCurrentExerciseId] = useState(null);
     const { user } = useAuth();
     const [selectedDate, setSelectedDate] = useState(null);
+    const [exercisesForSelectedDate, setExercisesForSelectedDate] = useState([]);
 
     useEffect(() => {
         if (user) {
@@ -81,7 +82,7 @@ const ExercisePage = () => {
         { type: 'text', title: 'description', placeholder: 'Description', value: 'description', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
         { type: 'text', title: 'duration', placeholder: 'Duration', value: 'duration', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
         { type: 'text', title: 'stepsTaken', placeholder: 'Steps Taken', value: 'stepsTaken', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
-    ]
+    ];
 
     const renderInputFields = (inputFieldsData) => {
         return inputFieldsData.map((inputField, index) => {
@@ -95,25 +96,36 @@ const ExercisePage = () => {
                 required={inputField.required}
                 className={inputField.className} />
         });
-    }
+    };
 
     const onDateSelect = (e) => {
-        setSelectedDate(e.value);
-        const exercise = userExercises.find(ex => new Date(ex.createdOn).toDateString() === e.value.toDateString());
-        if (exercise) {
-            setForm(exercise);
+        const selected = e.value;
+        setSelectedDate(selected);
+        const selectedDateString = selected.toDateString();
+        console.log('Selected Date:', selectedDateString);
+
+        const exercisesForDate = userExercises.filter(ex => new Date(ex.createdOn).toDateString() === selectedDateString);
+        setExercisesForSelectedDate(exercisesForDate);
+
+        if (exercisesForDate.length === 1) {
+            setForm(exercisesForDate[0]);
+            setIsEditing(true);
+            setCurrentExerciseId(exercisesForDate[0].id);
         } else {
             setForm({ title: '', description: '', duration: '', stepsTaken: '' });
+            setIsEditing(false);
+            setCurrentExerciseId(null);
         }
-        // setDialogVisible(true);
     };
 
     const dateTemplate = (date) => {
         const dateObj = new Date(date.year, date.month, date.day);
-        const exerciseDate = exercises.find(ex => new Date(ex.createdOn).toDateString() === dateObj.toDateString());
+        const dateString = dateObj.toDateString();
+        const exerciseDate = userExercises.find(ex => new Date(ex.createdOn).toDateString() === dateString);
+
         if (exerciseDate) {
             return (
-                <div style={{ backgroundColor: 'green', borderRadius: '', color: 'white', width: '12em', height: '12em', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ backgroundColor: 'green', borderRadius: '50%', color: 'white', width: '2em', height: '2em', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {date.day}
                 </div>
             );
@@ -138,47 +150,38 @@ const ExercisePage = () => {
                 onChange={onDateSelect}
                 inline
                 dateTemplate={dateTemplate}
-                style={{ width: '100%', border: '1px solid grey', background: 'grey' }}
                 className={calendarContainer}
-            >
-                {
-                    userExercises.map(exercise => (
-                        <span
-                            key={exercise.id}
-                            style={{ backgroundColor: 'grey', borderRadius: '50%', padding: '0.2em' }}
-                            date={new Date(exercise.createdOn).toDateString()}
-                        />
-                    ))
-                }
-            </Calendar>
-            <table className="table w-full">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Duration</th>
-                        <th>Steps Taken</th>
-                        <th>Date</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {userExercises.map(exercise => (
-                        <tr key={exercise.id}>
-                            <td>{exercise.title}</td>
-                            <td>{exercise.description}</td>
-                            <td>{exercise.duration} minutes</td>
-                            <td>{exercise.stepsTaken}</td>
-                            <td>{exercise.createdOn}</td>
-                            <td>
-                                <button onClick={() => handleEdit(exercise)} className="btn btn-sm btn-warning mr-2">Edit</button>
-                                <button onClick={() => handleDelete(exercise.id)} className="btn btn-sm btn-error">Delete</button>
-                            </td>
-
+                style={{ width: '100%' }}
+            />
+            {exercisesForSelectedDate.length > 0 && (
+                <table className="table w-full mt-4">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Duration</th>
+                            <th>Steps Taken</th>
+                            <th>Date</th>
+                            <th>Actions</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {exercisesForSelectedDate.map(exercise => (
+                            <tr key={exercise.id}>
+                                <td>{exercise.title}</td>
+                                <td>{exercise.description}</td>
+                                <td>{exercise.duration} minutes</td>
+                                <td>{exercise.stepsTaken}</td>
+                                <td>{new Date(exercise.createdOn).toLocaleDateString()}</td>
+                                <td>
+                                    <button onClick={() => handleEdit(exercise)} className="btn btn-sm btn-warning mr-2">Edit</button>
+                                    <button onClick={() => handleDelete(exercise.id)} className="btn btn-sm btn-error">Delete</button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            )}
         </div>
     );
 };
