@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { useExercise } from '../context';
-import { useAuth } from '../context';
+import { useExercise } from '../../context';
+import { useAuth } from '../../context';
+import { Calendar } from 'primereact/calendar';
+import styles from './ExercisePage.module.css';
 
 const ExercisePage = () => {
+    const { calendarContainer } = styles;
     const { exercises, loading, error, fetchExercises, createExercise, updateExercise, deleteExercise } = useExercise();
     const [form, setForm] = useState({ title: '', description: '', duration: '', stepsTaken: '' });
     const [isEditing, setIsEditing] = useState(false);
     const [currentExerciseId, setCurrentExerciseId] = useState(null);
     const { user } = useAuth();
+    const [selectedDate, setSelectedDate] = useState(null);
+    const [exercisesForSelectedDate, setExercisesForSelectedDate] = useState([]);
 
     useEffect(() => {
         if (user) {
@@ -77,7 +82,7 @@ const ExercisePage = () => {
         { type: 'text', title: 'description', placeholder: 'Description', value: 'description', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
         { type: 'text', title: 'duration', placeholder: 'Duration', value: 'duration', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
         { type: 'text', title: 'stepsTaken', placeholder: 'Steps Taken', value: 'stepsTaken', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
-    ]
+    ];
 
     const renderInputFields = (inputFieldsData) => {
         return inputFieldsData.map((inputField, index) => {
@@ -91,7 +96,42 @@ const ExercisePage = () => {
                 required={inputField.required}
                 className={inputField.className} />
         });
-    }
+    };
+
+    const onDateSelect = (e) => {
+        const selected = e.value;
+        setSelectedDate(selected);
+        const selectedDateString = selected.toDateString();
+        console.log('Selected Date:', selectedDateString);
+
+        const exercisesForDate = userExercises.filter(ex => new Date(ex.createdOn).toDateString() === selectedDateString);
+        setExercisesForSelectedDate(exercisesForDate);
+
+        if (exercisesForDate.length === 1) {
+            setForm(exercisesForDate[0]);
+            setIsEditing(true);
+            setCurrentExerciseId(exercisesForDate[0].id);
+        } else {
+            setForm({ title: '', description: '', duration: '', stepsTaken: '' });
+            setIsEditing(false);
+            setCurrentExerciseId(null);
+        }
+    };
+
+    const dateTemplate = (date) => {
+        const dateObj = new Date(date.year, date.month, date.day);
+        const dateString = dateObj.toDateString();
+        const exerciseDate = userExercises.find(ex => new Date(ex.createdOn).toDateString() === dateString);
+
+        if (exerciseDate) {
+            return (
+                <div style={{ backgroundColor: 'green', borderRadius: '50%', color: 'white', width: '2em', height: '2em', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {date.day}
+                </div>
+            );
+        }
+        return <div>{date.day}</div>;
+    };
 
     return (
         <div className="container mx-auto p-4">
@@ -105,31 +145,43 @@ const ExercisePage = () => {
                     {isEditing && <button type="button" onClick={resetForm} className="btn btn-secondary">Cancel</button>}
                 </div>
             </form>
-            <table className="table w-full">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Duration</th>
-                        <th>Steps Taken</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {userExercises.map(exercise => (
-                        <tr key={exercise.id}>
-                            <td>{exercise.title}</td>
-                            <td>{exercise.description}</td>
-                            <td>{exercise.duration} minutes</td>
-                            <td>{exercise.stepsTaken}</td>
-                            <td>
-                                <button onClick={() => handleEdit(exercise)} className="btn btn-sm btn-warning mr-2">Edit</button>
-                                <button onClick={() => handleDelete(exercise.id)} className="btn btn-sm btn-error">Delete</button>
-                            </td>
+            <Calendar
+                value={selectedDate}
+                onChange={onDateSelect}
+                inline
+                dateTemplate={dateTemplate}
+                className={calendarContainer}
+                style={{ width: '100%' }}
+            />
+            {exercisesForSelectedDate.length > 0 && (
+                <table className="table w-full mt-4">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Duration</th>
+                            <th>Steps Taken</th>
+                            <th>Date</th>
+                            <th>Actions</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {exercisesForSelectedDate.map(exercise => (
+                            <tr key={exercise.id}>
+                                <td>{exercise.title}</td>
+                                <td>{exercise.description}</td>
+                                <td>{exercise.duration} minutes</td>
+                                <td>{exercise.stepsTaken}</td>
+                                <td>{new Date(exercise.createdOn).toLocaleDateString()}</td>
+                                <td>
+                                    <button onClick={() => handleEdit(exercise)} className="btn btn-sm btn-warning mr-2">Edit</button>
+                                    <button onClick={() => handleDelete(exercise.id)} className="btn btn-sm btn-error">Delete</button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            )}
         </div>
     );
 };

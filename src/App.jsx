@@ -11,8 +11,12 @@ import { useNavigate } from 'react-router-dom'
 import AuthPage from './views/AuthPage'
 import { Header, NavBar } from './components'
 import styles from './App.module.css'
-import ExercisePage from './views/ExercisePage'
+import ExercisePage from './views/exercise/ExercisePage'
 import { FaHome, FaDumbbell, FaBullseye, FaTachometerAlt } from 'react-icons/fa';
+import 'primereact/resources/themes/saga-blue/theme.css';  // Theme
+import 'primereact/resources/primereact.min.css';          // Core CSS
+import 'primeicons/primeicons.css';                        // Icons
+import 'primeflex/primeflex.css';
 import FriendsPage from './views/FriendsPage'
 
 function App() {
@@ -58,3 +62,23 @@ function App() {
 }
 
 export default App
+
+// TODO: Showcase of friends list with statues
+// const users = {
+//   adrian: {
+//     username: 'adrian',
+//     password: 'password',
+//     role: 'user',
+//     friends: {
+//       kjdshkj124hjk1hkjdjh: {
+//         status: 'pending'
+//       },
+//       sdhjk1hkjdjh: {
+//         status: 'rejected'
+//       },
+//       sdhjk1hkjdjh: {
+//         status: 'confirmed'
+//       }
+//     }
+//   }
+// }
