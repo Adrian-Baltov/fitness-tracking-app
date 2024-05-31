@@ -1,8 +1,9 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useCallback, useContext, useState } from 'react';
 import { db } from '../../firebase/firebase-config';
-import { ref, push, update, remove } from "firebase/database";
+import { ref, push, update, remove, get } from "firebase/database";
 import { useAuth } from './AuthContext'
 import { format } from 'date-fns';
+import { fetchData } from '../utils/utils';
 
 const GoalContext = createContext();
 
@@ -13,9 +14,44 @@ export function GoalProvider({ children }) {
     const { user } = useAuth();
 
     // Function to get goals data by UID
-    const fetchGoals = async () => {
-        await fetchData('goals', setLoading, setGoals, setError);
-    }
+    const fetchGoals = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const snapshot = await get(ref(db, 'goals'));
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                const goalsList = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+                setGoals(goalsList);
+            } else {
+                setGoals([]);
+            }
+        } catch (err) {
+            setError(err);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    const fetchGoalsByUserId = useCallback(async (userId) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const snapshot = await get(ref(db, 'goals'));
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                const goalsList = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+                const goalsForUser = goalsList.filter(goal => goal.userId === userId);
+                setGoals(goalsForUser);
+            } else {
+                setGoals([]);
+            }
+        } catch (err) {
+            setError(err);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
     // Function to create a new goal
     const createGoal = (data) => {
@@ -45,6 +81,7 @@ export function GoalProvider({ children }) {
         createGoal,
         updateGoal,
         deleteGoal,
+        fetchGoalsByUserId
     };
 
     return (
