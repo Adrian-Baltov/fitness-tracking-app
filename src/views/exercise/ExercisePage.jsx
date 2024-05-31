@@ -8,7 +8,7 @@ import { format } from 'date-fns';
 const ExercisePage = () => {
     const { calendarContainer } = styles;
     const calendarRef = useRef(null);
-    const { exercises, loading, error, fetchExercises, createExercise, updateExercise, deleteExercise } = useExercise();
+    const { exercises, loading, error, fetchExercises, createExercise, updateExercise, deleteExercise, fetchExercisesByUserId } = useExercise();
     const [form, setForm] = useState({ title: '', description: '', duration: '', calories: '', createdOn: '' });
     const [isEditing, setIsEditing] = useState(false);
     const [currentExerciseId, setCurrentExerciseId] = useState(null);
@@ -19,9 +19,9 @@ const ExercisePage = () => {
     useEffect(() => {
         if (user) {
             console.log('Fetching exercises...');
-            fetchExercises();
+            fetchExercisesByUserId(user.uid);
         }
-    }, [user, fetchExercises]);
+    }, [user, fetchExercisesByUserId]);
 
     useEffect(() => {
         console.log('Loading state:', loading);
@@ -30,14 +30,17 @@ const ExercisePage = () => {
     }, [loading, exercises, error]);
 
     useEffect(() => {
+        const currentDate = calendarRef?.current?.getCurrentDateTime()
 
-        const selectedDateString = selectedDate ? selectedDate.toDateString() : null;
+        const selectedDateString = currentDate ? currentDate.toDateString() : null;
         const exercisesForDate = exercises.filter(ex => selectedDateString && new Date(ex.createdOn).toDateString() === selectedDateString);
+
         setExercisesForSelectedDate(exercisesForDate);
     }, [exercises, selectedDate]);
 
     const handleInputChange = (e) => {
         const { title, value } = e.target;
+
         setForm(prevForm => ({ ...prevForm, [title]: value, createdOn: format(calendarRef?.current?.getCurrentDateTime(), 'yyyy-MM-dd HH:mm:ss') }));
     };
 
@@ -92,7 +95,7 @@ const ExercisePage = () => {
     if (!exercises.length) return <p>No exercises found.</p>;
 
     const inputFieldsData = [
-        { type: 'text', title: 'title', placeholder: 'Title', value: 'title', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
+        { type: 'select', options: ["Select an option", 'Strength', 'Stamina', 'Stretching'], title: 'title', placeholder: 'Description', value: 'description', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
         { type: 'text', title: 'description', placeholder: 'Description', value: 'description', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
         { type: 'text', title: 'duration', placeholder: 'Duration', value: 'duration', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
         { type: 'text', title: 'calories', placeholder: 'Calories', value: 'calories', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
@@ -100,15 +103,27 @@ const ExercisePage = () => {
 
     const renderInputFields = (inputFieldsData) => {
         return inputFieldsData.map((inputField, index) => {
-            return <input
-                key={index}
-                type={inputField.type}
-                title={inputField.title}
-                placeholder={inputField.placeholder}
-                value={form[inputField.value]}
-                onChange={handleInputChange}
-                required={inputField.required}
-                className={inputField.className} />
+            return (
+                <div key={index}>
+                    {inputField.type === 'select' ? (
+                        <select title={inputField.title} onChange={handleInputChange} className="select select-bordered w-full max-w-xs" defaultValue="Select an option">
+                            {inputField.options.map((option) => {
+
+                                return <option key={option}>{option}</option>
+                            })}
+                        </select>
+                    ) : (
+                        <input
+                            type={inputField.type}
+                            title={inputField.title}
+                            placeholder={inputField.placeholder}
+                            value={form[inputField.value]}
+                            onChange={inputField.onChange ? handleInputChange : null}
+                            required={inputField.required}
+                            className={inputField.className} />
+                    )}
+                </div>
+            );
         });
     };
 
