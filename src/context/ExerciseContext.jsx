@@ -31,6 +31,26 @@ export function ExerciseProvider({ children }) {
         }
     }, []);
 
+    const fetchExercisesByUserId = useCallback(async (userId) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const snapshot = await get(ref(db, 'exercises'));
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                const exercisesList = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+                const exercisesForUser = exercisesList.filter(exercise => exercise.userId === userId).reverse();
+                setExercises(exercisesForUser);
+            } else {
+                setExercises([]);
+            }
+        } catch (err) {
+            setError(err);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
     // Function to create a new exercise
     const createExercise = (data) => {
         const exerciseRef = ref(db, 'exercises');
@@ -58,6 +78,7 @@ export function ExerciseProvider({ children }) {
         createExercise,
         updateExercise,
         deleteExercise,
+        fetchExercisesByUserId,
     }), [exercises, loading, error, fetchExercises, createExercise, updateExercise, deleteExercise]);
 
     return (
