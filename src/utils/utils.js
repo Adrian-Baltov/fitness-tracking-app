@@ -1,27 +1,23 @@
 import { ref, get, query } from "firebase/database";
 import { db } from '../../firebase/firebase-config';
 
-export const fetchData = async (table, setLoading, setData, setError) => {
+export const fetchData = async (collectionName, setLoading, setData, setError) => {
     setLoading(true);
-    const exercisesQuery = query(ref(db, table));
-
+    setError(null);
     try {
-        const snapshot = await get(exercisesQuery);
+        const snapshot = await get(ref(db, collectionName));
         if (snapshot.exists()) {
-            const flattenData = Object.entries(snapshot.val()).map(([key, value]) => ({
-                id: key,
-                ...value
-            }));
-            setData(flattenData);
+            const data = snapshot.val();
+            const dataList = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+            setData(dataList);
         } else {
             setData([]);
         }
-    } catch (error) {
-        setError(error);
+    } catch (err) {
+        setError(err);
     } finally {
         setLoading(false);
     }
-
 };
 
 export const getAllUsersArray = async () => {
