@@ -30,7 +30,7 @@ const ExercisePage = () => {
     }, [loading, exercises, error]);
 
     useEffect(() => {
-        // Update exercisesForSelectedDate when exercises change
+
         const selectedDateString = selectedDate ? selectedDate.toDateString() : null;
         const exercisesForDate = exercises.filter(ex => selectedDateString && new Date(ex.createdOn).toDateString() === selectedDateString);
         setExercisesForSelectedDate(exercisesForDate);
@@ -45,14 +45,14 @@ const ExercisePage = () => {
         e.preventDefault();
         if (isEditing) {
             updateExercise(currentExerciseId, form).then(() => {
-                fetchExercises(); // Refetch exercises after update
+                fetchExercises();
                 resetForm();
             }).catch(error => {
                 console.error("Failed to update exercise:", error);
             });
         } else {
             createExercise(form).then(() => {
-                fetchExercises(); // Refetch exercises after create
+                fetchExercises();
                 resetForm();
             }).catch(error => {
                 console.error("Failed to create exercise:", error);
@@ -74,7 +74,7 @@ const ExercisePage = () => {
 
     const handleDelete = (exerciseId) => {
         deleteExercise(exerciseId).then(() => {
-            fetchExercises(); // Refetch exercises after delete
+            fetchExercises();
         }).catch(error => {
             console.error("Failed to delete exercise:", error);
         });
