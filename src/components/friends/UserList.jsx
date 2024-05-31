@@ -1,14 +1,13 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { useUser } from '../../context/UserContext';
-import { useAuth } from '../../context/AuthContext';
-import { FaBox } from 'react-icons/fa';
 
 
 const UserList = ({ users }) => {
     const userContext = useUser();
     const currentUser = userContext.userData;
     const [requestPending, setRequestPending] = useState(false);
+    const [sentRequests, setSentRequests] = useState(false);
 
 
     const isCurrentUser = (user, currentUser) => {
@@ -27,6 +26,10 @@ const UserList = ({ users }) => {
             ...prevState,
             [userToAdd.uid]: true
         }));
+    
+       const sentRequests = currentUser.sentRequests ? [...currentUser.sentRequests, userToAdd.username] : [userToAdd.username];
+       userContext.updateUser(currentUser.username, { sentRequests: sentRequests });
+       setSentRequests(sentRequests); 
     }
 
 
@@ -55,18 +58,18 @@ const UserList = ({ users }) => {
                     {users.map((user) => {
                         let content;
                         if (isCurrentUser(user, currentUser)) {
-                            content = <span>Current User</span>
-                        } else if (requestPending[user.uid]) {
-                            content = <div className="badge badge-accent w-full">Request pending</div>;
 
+                            content = <span>Current User</span>
+                            
+                        } else if (requestPending[user.uid]) {
+
+                            content = <div className="badge badge-accent w-full">Request pending</div>;
 
                         } else {
                             content = (
-                                <label  >
+                                <label>
                                     <button className="" onClick={() => handleAddFriend(user)} >Add friend</button>
                                 </label>
-
-
                             );
                         }
 
