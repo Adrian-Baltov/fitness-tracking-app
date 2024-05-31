@@ -18,6 +18,7 @@ import 'primereact/resources/themes/saga-blue/theme.css';  // Theme
 import 'primereact/resources/primereact.min.css';          // Core CSS
 import 'primeicons/primeicons.css';                        // Icons
 import 'primeflex/primeflex.css';
+import GoalsPage from './views/goals/GoalsPage'
 
 function App() {
 
@@ -49,8 +50,8 @@ function App() {
             <Route path='/auth' element={<AuthPage />} />
             <Route path='/dashboard' element={<div>Dashboard</div>} />
             <Route path='/exercises' element={<ExercisePage />} />
-            <Route path='/search/friends' element={<FriendsPage/>} />
-            <Route path='/goals' element={<div>Goals</div>} />
+            <Route path='/search/friends' element={<FriendsPage />} />
+            <Route path='/goals' element={<GoalsPage />} />
             <Route path='/' element={<div>Home</div>} />
           </Routes>
         </div>
