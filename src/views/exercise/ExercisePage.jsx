@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useExercise } from '../../context';
+import { useExercise, useGoal } from '../../context';
 import { useAuth } from '../../context';
 import { Calendar } from 'primereact/calendar';
 import styles from './ExercisePage.module.css';
 import { format } from 'date-fns';
+import { ActivityRings } from "@jonasdoesthings/react-activity-rings";
 
 const ExercisePage = () => {
     const { calendarContainer } = styles;
@@ -15,6 +16,7 @@ const ExercisePage = () => {
     const { user } = useAuth();
     const [selectedDate, setSelectedDate] = useState(null);
     const [exercisesForSelectedDate, setExercisesForSelectedDate] = useState([]);
+    const { goals } = useGoal()
 
     useEffect(() => {
         if (user) {
@@ -143,13 +145,11 @@ const ExercisePage = () => {
         const dateString = dateObj.toDateString();
         const exerciseDate = exercises.find(ex => new Date(ex.createdOn).toDateString() === dateString);
 
+        console.error('Exercise date:', dateObj.toLocaleDateString())
+
         if (exerciseDate) {
             return (
-                <div style={{ backgroundColor: 'green', borderRadius: '50%', color: 'white', width: '2em', height: '2em', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <div style={{ color: 'white', border: '3px solid red', borderRadius: '50%', padding: '20px' }}>
-                        {date.day}
-                    </div>
-                </div>
+                <DateTemplate date={date} progress={[0.5, 0.9]} />
             );
         }
         return <div>{date.day}</div>;
@@ -214,3 +214,31 @@ const ExercisePage = () => {
 };
 
 export default ExercisePage;
+
+
+export const DateTemplate = ({ date, progress }) => {
+    const { dateCell, circlesContainer } = styles;
+    const [calories, duration] = progress
+
+    return (
+        <div className={dateCell}>
+            <div className={circlesContainer}>
+                <ActivityRings
+                    rings={[
+                        { filledPercentage: calories, color: '#fa0e5a' },
+                        { filledPercentage: duration, color: '#afff02' },
+                    ]}
+                    options={{
+                        initialRadius: 50,
+                        animationDurationMillis: 1500,
+                        containerHeight: '10vh',
+                        backgroundOpacity: 0.2,
+                        paddingBetweenRings: 5
+                    }}
+                />
+            </div>
+
+            {date.day}
+        </div>
+    );
+}
