@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useAuth, useUser } from '../../context'
 import styles from './Header.module.css'
 import { NavLink } from 'react-router-dom'
-import {FaBell} from 'react-icons/fa'
+import { FaBell } from 'react-icons/fa'
 
 const Header = () => {
     const { container, dropdownContainer, username, dropdownMenu, usernamePicture, usernameContainer } = styles
@@ -41,13 +41,13 @@ const Header = () => {
     return (
         <div className={`${container} bg-base-200`} >
             <div>Logo</div>
-             
+
             {user ? (
-                
+
                 <div className={dropdownContainer} ref={dropdownRef}>
-                    <button onClick={{/*notifications tab*/}}> <FaBell size={30} color="gray" /></button> 
+                    <button onClick={() => { }}> <FaBell size={30} color="gray" /></button>
                     <div className={usernameContainer} onClick={toggleDropdown}>
-                  
+
                         <img src={userData?.profilePicUrl} className={usernamePicture} />
                         <div className={username}>{userData && userData.username}</div>
                     </div>
