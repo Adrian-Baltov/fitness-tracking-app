@@ -145,7 +145,7 @@ const ExercisePage = () => {
         const dateString = dateObj.toDateString();
         const exerciseDate = exercises.find(ex => new Date(ex.createdOn).toDateString() === dateString);
 
-        console.error('Exercise date:', dateObj.toLocaleDateString())
+        // console.error('Exercise date:', dateObj.toLocaleDateString())
 
         if (exerciseDate) {
             return (
