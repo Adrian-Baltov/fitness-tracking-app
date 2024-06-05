@@ -124,49 +124,66 @@ export default function Register() {
 
   return (
     <div className="login-container">
-      <div className="login-label">Sign up to track your fitness progress!</div>
+      <div className="login-label mt-3 text-3x1 block text-center font-semibold">Sign up to track your fitness progress!</div>
       <div className="login-border"></div>
 
       <div className="login-input-container">
-        <div className="login-inputs">
-          <label htmlFor="username">Username </label>
-          <input className="login-input" value={form.username} onChange={updateForm('username')} type="text" name="username" id="username" />
+        <div className="login-inputs mt-3">
+          <label className="input input-bordered flex items-center gap-2">
+            Username
+            <input className="login-input" value={form.username} onChange={updateForm('username')} type="text" name="username" id="username" placeholder="Type here..." />
+          </label>
         </div>
-        <div className="login-inputs">
-          <label htmlFor="firstName">First Name </label>
-          <input className="login-input" value={form.firstName} onChange={updateForm('firstName')} type="text" name="firstName" id="firstName" />
+        <div className="login-inputs mt-3">
+          <label className="input input-bordered flex items-center gap-2">
+            First Name
+            <input className="login-input" value={form.firstName} onChange={updateForm('firstName')} type="text" name="firstName" id="firstName" placeholder="Type here..." />
+          </label>
         </div>
-        <div className="login-inputs">
-          <label htmlFor="lastName">Last Name </label>
-          <input className="login-input" value={form.lastName} onChange={updateForm('lastName')} type="text" name="lastName" id="lastName" />
+        <div className="login-inputs mt-3">
+          <label className="input input-bordered flex items-center gap-2">
+            Last Name
+            <input className="login-input" value={form.lastName} onChange={updateForm('lastName')} type="text" name="lastName" id="lastName" placeholder="Type here..." />
+          </label>
         </div>
-        <div className="login-inputs">
-          <label htmlFor="email">Email </label>
-          <input className="login-input" value={form.email} onChange={updateForm('email')} type="text" name="email" id="email" />
+        <div className="login-inputs mt-3">
+          <label className="input input-bordered flex items-center gap-2">
+            Email
+            <input className="login-input" value={form.email} onChange={updateForm('email')} type="text" name="email" id="email" placeholder="Type here..." />
+          </label>
         </div>
-        <div className="login-inputs">
-          <label htmlFor="password">Password </label>
-          <input className="login-input" value={form.password} onChange={updateForm('password')} type="password" name="password" id="password" />
+        <div className="login-inputs mt-3">
+          <label className="input input-bordered flex items-center gap-2">
+            Password
+            <input className="login-input" value={form.password} onChange={updateForm('password')} type="password" name="password" id="password" placeholder="Type here..." />
+          </label>
         </div>
-        <div className="login-inputs">
-          <label htmlFor="phone">Phone </label>
-          <input className="login-input" value={form.phone} onChange={updateForm('phone')} type="text" name="phone" id="phone" />
+        <div className="login-inputs mt-3">
+          <label className="input input-bordered flex items-center gap-3">Phone
+            <input className="login-input" value={form.phone} onChange={updateForm('phone')} type="text" name="phone" id="phone" placeholder="Type here..." />
+          </label>
         </div>
-        <div className="login-inputs">
-          <label htmlFor="weight">Weight <i>(in kg)</i></label>
-          <input className="login-input" value={form.weight} onChange={updateForm('weight')} type="text" name="weight" id="weight" />
+        <div className="login-inputs mt-3">
+          <label className="input input-bordered flex items-center gap-3">
+            Weight <i>(in kg)</i>
+            <input className="login-input" value={form.weight} onChange={updateForm('weight')} type="text" name="weight" id="weight" placeholder="Type here..." />
+          </label>
         </div>
-        <div className="login-inputs">
-          <label htmlFor="height">Height <i>(in cm)</i></label>
-          <input className="login-input" value={form.height} onChange={updateForm('height')} type="text" name="height" id="height" />
-          </div>
-        <p
+        <div className="login-inputs mt-3">
+          <label className="input input-bordered flex items-center gap-3">Height <i>(in cm)</i>
+            <input className="login-input" value={form.height} onChange={updateForm('height')} type="text" name="height" id="height" placeholder="Type here..." />
+          </label>
+        </div>
+        <button
           onClick={registerUser}
-
+          className="inline-block mt-3 cursor-pointer rounded-md bg-gray-800 px-4 py-3 text-center text-sm font-semibold uppercase text-white transition duration-200 ease-in-out hover:bg-gray-900"
         >
           Sign up
-        </p>
+        </button>
       </div>
-      {error && <p className="error">{error}</p>}
+      {error && <div role="alert" className="alert alert-warning mt-3 mb-3">
+  <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+  <span>{error}</span>
+</div>}
     </div>)
 }
