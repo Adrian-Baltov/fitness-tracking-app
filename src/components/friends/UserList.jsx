@@ -6,7 +6,7 @@ import { useUser } from '../../context/UserContext';
 const UserList = ({ users }) => {
     const userContext = useUser();
     const currentUser = userContext.userData;
-    const [requestPending, setRequestPending] = useState(false);
+    const [requestsPending, setRequestsPending] = useState(false);
     const [sentRequests, setSentRequests] = useState(false);
 
 
@@ -19,30 +19,49 @@ const UserList = ({ users }) => {
 
 
     const handleAddFriend = (userToAdd) => {
-        const friendRequests = userToAdd.friendRequests ? [...userToAdd.friendRequests, currentUser.username] : [currentUser.username];
-        userContext.updateUser(userToAdd.username, { friendRequests: friendRequests })
+        const friendRequests = userToAdd.friendRequests ? { ...userToAdd.friendRequests, [currentUser.username]: currentUser.username } : { [currentUser.username]: currentUser.username };
+        userContext.updateUser(userToAdd.username, { friendRequests: friendRequests });
 
-        setRequestPending(prevState => ({
-            ...prevState,
-            [userToAdd.uid]: true
-        }));
-    
-       const sentRequests = currentUser.sentRequests ? [...currentUser.sentRequests, userToAdd.username] : [userToAdd.username];
-       userContext.updateUser(currentUser.username, { sentRequests: sentRequests });
-       setSentRequests(sentRequests); 
+
+        const newNotification = {
+            type: 'friendRequest',
+            from: currentUser.username
+        }
+        const notifications = userToAdd.notifications ? { ...userToAdd.notifications, [currentUser.username]: newNotification } 
+        :
+         { [currentUser.username]: newNotification };
+        userContext.updateUser(userToAdd.username, { notifications: notifications })
+
+
+        setRequestsPending((prevState) => {
+            return { ...prevState, [userToAdd.username]: true };
+        });
+
+
+        const sentRequests = currentUser.sentRequests || {};
+        const newRequest = {
+            type: 'friendRequest',
+            from: currentUser.username,
+            timestamp: Date.now()
+        };
+        sentRequests[userToAdd.username] = newRequest;
+
+
+        userContext.updateUser(currentUser.username, { sentRequests: sentRequests });
+        setSentRequests(sentRequests);
     }
 
 
     useEffect(() => {
         const pendingRequests = {};
         users.forEach(user => {
-            if (user.friendRequests && user.friendRequests.includes(currentUser.username)) {
+            if (user.friendRequests && user.friendRequests.hasOwnProperty(currentUser.username)) {
                 pendingRequests[user.uid] = true;
             } else {
                 pendingRequests[user.uid] = false;
             }
         });
-        setRequestPending(pendingRequests);
+        setRequestsPending(pendingRequests);
     }, [users]);
 
 
@@ -60,8 +79,8 @@ const UserList = ({ users }) => {
                         if (isCurrentUser(user, currentUser)) {
 
                             content = <span>Current User</span>
-                            
-                        } else if (requestPending[user.uid]) {
+
+                        } else if (requestsPending[user.username]) {
 
                             content = <div className="badge badge-accent w-full">Request pending</div>;
 

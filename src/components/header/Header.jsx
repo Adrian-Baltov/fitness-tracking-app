@@ -3,6 +3,7 @@ import { useAuth, useUser } from '../../context'
 import styles from './Header.module.css'
 import { NavLink } from 'react-router-dom'
 import {FaBell} from 'react-icons/fa'
+import Notifications from '../notifications/Notifications'
 
 const Header = () => {
     const { container, dropdownContainer, username, dropdownMenu, usernamePicture, usernameContainer } = styles
@@ -45,7 +46,7 @@ const Header = () => {
             {user ? (
                 
                 <div className={dropdownContainer} ref={dropdownRef}>
-                    <button onClick={{/*notifications tab*/}}> <FaBell size={30} color="gray" /></button> 
+                    <Notifications/> 
                     <div className={usernameContainer} onClick={toggleDropdown}>
                   
                         <img src={userData?.profilePicUrl} className={usernamePicture} />
