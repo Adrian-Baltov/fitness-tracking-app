@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useGoal } from '../../context';
-import styles from './GoalsPage.module.css';
 import { useAuth } from '../../context';
+import { format, addDays, addWeeks, addMonths } from 'date-fns';
+import Toast from '../../components/toast/Toast';
+import ConfirmationModal from '../../components/confirmationModal/ConfirmationModal';
 
 const GoalsPage = () => {
     const { goals, loading, error, fetchGoals, createGoal, updateGoal, deleteGoal, fetchGoalsByUserId } = useGoal();
-    const [form, setForm] = useState({ calories: '', time: '' });
+    const [form, setForm] = useState({ calories: '', duration: '', frequency: 'Daily' });
     const [isEditing, setIsEditing] = useState(false);
     const [currentGoalId, setCurrentGoalId] = useState(null);
     const { user } = useAuth();
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+    const [showModal, setShowModal] = useState(false);
+    const [goalToDelete, setGoalToDelete] = useState(null);
 
     useEffect(() => {
         if (user) {
@@ -21,19 +27,46 @@ const GoalsPage = () => {
         setForm(prevForm => ({ ...prevForm, [name]: value }));
     };
 
+    const calculateEndDate = (frequency, createdOn) => {
+        const createdDate = new Date(createdOn);
+        let endDate;
+        switch (frequency) {
+            case 'Daily':
+                endDate = addDays(createdDate, 1);
+                break;
+            case 'Weekly':
+                endDate = addWeeks(createdDate, 1);
+                break;
+            case 'Monthly':
+                endDate = addMonths(createdDate, 1);
+                break;
+            default:
+                endDate = createdDate;
+        }
+        return format(endDate, 'yyyy-MM-dd HH:mm:ss');
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
+        const createdOn = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
+        const endDate = calculateEndDate(form.frequency, createdOn);
+        const goalData = { ...form, createdOn, endDate };
+
         if (isEditing) {
-            updateGoal(currentGoalId, form).then(() => {
+            updateGoal(currentGoalId, goalData).then(() => {
                 fetchGoalsByUserId(user.uid);
                 resetForm();
+                setToastMessage('Goal updated successfully');
+                setShowToast(true);
             }).catch(error => {
                 console.error("Failed to update goal:", error);
             });
         } else {
-            createGoal(form).then(() => {
+            createGoal(goalData).then(() => {
                 fetchGoalsByUserId(user.uid);
                 resetForm();
+                setToastMessage('Goal created successfully');
+                setShowToast(true);
             }).catch(error => {
                 console.error("Failed to create goal:", error);
             });
@@ -41,21 +74,31 @@ const GoalsPage = () => {
     };
 
     const handleEdit = (goal) => {
-        setForm({ calories: goal.calories, time: goal.time });
+        setForm({ calories: goal.calories, duration: goal.duration, frequency: goal.frequency });
         setCurrentGoalId(goal.id);
         setIsEditing(true);
     };
 
     const handleDelete = (goalId) => {
-        deleteGoal(goalId).then(() => {
-            resetForm();
+        setGoalToDelete(goalId);
+        setShowModal(true);
+    };
+
+    const confirmDelete = () => {
+        deleteGoal(goalToDelete).then(() => {
+            fetchGoalsByUserId(user.uid);
+            setShowToast(true);
+            setToastMessage('Goal deleted successfully');
         }).catch(error => {
             console.error("Failed to delete goal:", error);
+        }).finally(() => {
+            setShowModal(false);
+            setGoalToDelete(null);
         });
     };
 
     const resetForm = () => {
-        setForm({ calories: '', time: '' });
+        setForm({ calories: '', duration: '', frequency: 'Daily' });
         setIsEditing(false);
         setCurrentGoalId(null);
     };
@@ -78,13 +121,25 @@ const GoalsPage = () => {
                         className="input input-bordered w-full"
                     />
                     <input
-                        type="time"
-                        name="time"
-                        value={form.time}
+                        type="number"
+                        name="duration"
+                        placeholder="Duration (minutes)"
+                        value={form.duration}
                         onChange={handleInputChange}
                         required
                         className="input input-bordered w-full"
                     />
+                    <select
+                        name="frequency"
+                        value={form.frequency}
+                        onChange={handleInputChange}
+                        className="select select-bordered w-full"
+                    >
+                        <option value="Daily">Select an option</option>
+                        <option value="Daily">Daily</option>
+                        <option value="Weekly">Weekly</option>
+                        <option value="Monthly">Monthly</option>
+                    </select>
                 </div>
                 <div className="mt-4 flex space-x-2">
                     <button type="submit" className="btn btn-primary">{isEditing ? 'Update Goal' : 'Create Goal'}</button>
@@ -95,7 +150,8 @@ const GoalsPage = () => {
                 <thead>
                     <tr>
                         <th>Calories</th>
-                        <th>Time</th>
+                        <th>Duration</th>
+                        <th>Frequency</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -103,7 +159,8 @@ const GoalsPage = () => {
                     {goals.map(goal => (
                         <tr key={goal.id}>
                             <td>{goal.calories}</td>
-                            <td>{goal.time}</td>
+                            <td>{goal.duration}</td>
+                            <td>{goal.frequency}</td>
                             <td>
                                 <button onClick={() => handleEdit(goal)} className="btn btn-sm btn-warning mr-2">Edit</button>
                                 <button onClick={() => handleDelete(goal.id)} className="btn btn-sm btn-error">Delete</button>
@@ -112,6 +169,12 @@ const GoalsPage = () => {
                     ))}
                 </tbody>
             </table>
+            {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
+            <ConfirmationModal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                onConfirm={confirmDelete}
+            />
         </div>
     );
 };
