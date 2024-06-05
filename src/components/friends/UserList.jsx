@@ -35,11 +35,11 @@ const UserList = ({ users }) => {
 
 
         setRequestsPending((prevState) => {
-            return { ...prevState, [userToAdd.username]: true }; // for immeadiate UI update
+            return { ...prevState, [userToAdd.uid]: true }; // for immeadiate UI update
         });
 
      
-        console.log('notifications', notifications)
+    
 
       
 
@@ -73,7 +73,10 @@ const UserList = ({ users }) => {
             return pendingRequests; // Return the updated state
         });
     }, [users]);
+  
 
+
+  
 
 
     return (
@@ -91,7 +94,7 @@ const UserList = ({ users }) => {
 
                             content = <span>Current User</span>
 
-                        } else if (requestsPending[user.username]) {
+                        } else if (requestsPending[user.uid]) {
                          
                             content = <div className="badge badge-accent w-full">Request pending</div>;
 
