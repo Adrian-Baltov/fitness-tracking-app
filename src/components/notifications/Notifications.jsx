@@ -17,25 +17,30 @@ const Notifications = () => {
     const [notifications, setNotifications] = useState([]);
 
     useEffect(() => {
-        const fetchNotifications = async () => {
+        const notificationsRef = ref(db, `users/${userData?.username}/notifications`)
+        const fetchNotifications = (snapshot) => {
             try {
        
-                   
-                        const notificationsData = userData.notifications;
+                   if (snapshot.exists()) {
+                        const notificationsData = snapshot.val();
                            
                         const notificationsList = Object.keys(notificationsData).map(key => ({...notificationsData[key] }));
                         setNotifications(notificationsList);
-                        console.log(userData)
-                   
+                   }
+                
               
             } catch (error) {
                 console.log('Error fetching notifications: ', error)
             }
 
         }
-        fetchNotifications();
+        const unsubscribe = onValue(notificationsRef, fetchNotifications)
 
-    }, [expandNotifications, userData])
+        return () => {
+            unsubscribe();
+        }
+
+    }, [userData])
 
 
 

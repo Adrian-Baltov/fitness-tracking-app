@@ -5,7 +5,7 @@ import { get, set } from "firebase/database";
 import { ref, uploadBytes, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { deleteObject } from "firebase/storage";
 import { storage, storageRef } from "../../../firebase/firebase-config";
-import backgroundImage from '../../assets/background.jpg';
+
 const UserProfile = () => {
     const user = useUser();
     const { user: authUser } = useAuth();

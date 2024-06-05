@@ -8,6 +8,7 @@ const UserList = ({ users }) => {
     const currentUser = userContext.userData;
     const [requestsPending, setRequestsPending] = useState(false);
     const [sentRequests, setSentRequests] = useState({});
+    const [notifications, setNotifications] = useState({});
 
 
     const isCurrentUser = (user, currentUser) => {
@@ -37,6 +38,10 @@ const UserList = ({ users }) => {
             return { ...prevState, [userToAdd.username]: true }; // for immeadiate UI update
         });
 
+     
+        console.log('notifications', notifications)
+
+      
 
         const sentRequests = currentUser.sentRequests || {};
         const newRequest = {
@@ -48,10 +53,11 @@ const UserList = ({ users }) => {
 
 
         userContext.updateUser(currentUser.username, { sentRequests: sentRequests });
+        
         setSentRequests(sentRequests);
     }
 
-    
+
 
    // Update the requestsPending state when the users array changes
     useEffect(() => {
@@ -69,12 +75,6 @@ const UserList = ({ users }) => {
     }, [users]);
 
 
-    useEffect(() => {
-      console.log('requestsPending', requestsPending)
-      console.log(sentRequests)
-    }
-    , [requestsPending])
-
 
     return (
         <div className="overflow-x-auto">
@@ -91,7 +91,7 @@ const UserList = ({ users }) => {
 
                             content = <span>Current User</span>
 
-                        } else if (requestsPending[user.uid]) {
+                        } else if (requestsPending[user.username]) {
                          
                             content = <div className="badge badge-accent w-full">Request pending</div>;
 
