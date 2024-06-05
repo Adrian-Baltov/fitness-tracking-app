@@ -8,6 +8,7 @@ const UserList = ({ users }) => {
     const currentUser = userContext.userData;
     const [requestsPending, setRequestsPending] = useState(false);
     const [sentRequests, setSentRequests] = useState({});
+    const [notifications, setNotifications] = useState({});
 
 
     const isCurrentUser = (user, currentUser) => {
@@ -34,9 +35,13 @@ const UserList = ({ users }) => {
 
 
         setRequestsPending((prevState) => {
-            return { ...prevState, [userToAdd.username]: true }; // for immeadiate UI update
+            return { ...prevState, [userToAdd.uid]: true }; // for immeadiate UI update
         });
 
+     
+    
+
+      
 
         const sentRequests = currentUser.sentRequests || {};
         const newRequest = {
@@ -48,10 +53,11 @@ const UserList = ({ users }) => {
 
 
         userContext.updateUser(currentUser.username, { sentRequests: sentRequests });
+        
         setSentRequests(sentRequests);
     }
 
-    
+
 
    // Update the requestsPending state when the users array changes
     useEffect(() => {
@@ -67,13 +73,10 @@ const UserList = ({ users }) => {
             return pendingRequests; // Return the updated state
         });
     }, [users]);
+  
 
 
-    useEffect(() => {
-      console.log('requestsPending', requestsPending)
-      console.log(sentRequests)
-    }
-    , [requestsPending])
+  
 
 
     return (
