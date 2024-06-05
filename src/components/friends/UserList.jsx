@@ -7,7 +7,7 @@ const UserList = ({ users }) => {
     const userContext = useUser();
     const currentUser = userContext.userData;
     const [requestsPending, setRequestsPending] = useState(false);
-    const [sentRequests, setSentRequests] = useState(false);
+    const [sentRequests, setSentRequests] = useState({});
 
 
     const isCurrentUser = (user, currentUser) => {
@@ -34,7 +34,7 @@ const UserList = ({ users }) => {
 
 
         setRequestsPending((prevState) => {
-            return { ...prevState, [userToAdd.username]: true };
+            return { ...prevState, [userToAdd.username]: true }; // for immeadiate UI update
         });
 
 
@@ -51,18 +51,29 @@ const UserList = ({ users }) => {
         setSentRequests(sentRequests);
     }
 
+    
+
+   // Update the requestsPending state when the users array changes
+    useEffect(() => {
+        setRequestsPending(prevState => {
+            const pendingRequests = { ...prevState }; // Copy the previous state
+            users.forEach(user => {
+                if (user.friendRequests && user.friendRequests.hasOwnProperty(currentUser.username)) {
+                    pendingRequests[user.uid] = true;
+                } else {
+                    pendingRequests[user.uid] = false;
+                }
+            });
+            return pendingRequests; // Return the updated state
+        });
+    }, [users]);
+
 
     useEffect(() => {
-        const pendingRequests = {};
-        users.forEach(user => {
-            if (user.friendRequests && user.friendRequests.hasOwnProperty(currentUser.username)) {
-                pendingRequests[user.uid] = true;
-            } else {
-                pendingRequests[user.uid] = false;
-            }
-        });
-        setRequestsPending(pendingRequests);
-    }, [users]);
+      console.log('requestsPending', requestsPending)
+      console.log(sentRequests)
+    }
+    , [requestsPending])
 
 
     return (
@@ -80,8 +91,8 @@ const UserList = ({ users }) => {
 
                             content = <span>Current User</span>
 
-                        } else if (requestsPending[user.username]) {
-
+                        } else if (requestsPending[user.uid]) {
+                         
                             content = <div className="badge badge-accent w-full">Request pending</div>;
 
                         } else {
