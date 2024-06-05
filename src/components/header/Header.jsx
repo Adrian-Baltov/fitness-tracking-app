@@ -42,13 +42,13 @@ const Header = () => {
     return (
         <div className={`${container} bg-base-200`} >
             <div>Logo</div>
-             
+
             {user ? (
-                
+
                 <div className={dropdownContainer} ref={dropdownRef}>
                     <Notifications/> 
                     <div className={usernameContainer} onClick={toggleDropdown}>
-                  
+
                         <img src={userData?.profilePicUrl} className={usernamePicture} />
                         <div className={username}>{userData && userData.username}</div>
                     </div>

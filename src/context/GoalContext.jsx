@@ -56,6 +56,7 @@ export function GoalProvider({ children }) {
     // Function to create a new goal
     const createGoal = (data) => {
         const goalRef = ref(db, 'goals');
+        console.error(data);
         const userId = user ? user.uid : null;
         const goalDataWithUserId = { ...data, userId, createdOn: format(new Date(), 'yyyy-MM-dd HH:mm:ss') };
         return push(goalRef, goalDataWithUserId);

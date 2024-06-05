@@ -25,14 +25,14 @@ const GoalsPage = () => {
         e.preventDefault();
         if (isEditing) {
             updateGoal(currentGoalId, form).then(() => {
-                fetchGoals();
+                fetchGoalsByUserId(user.uid);
                 resetForm();
             }).catch(error => {
                 console.error("Failed to update goal:", error);
             });
         } else {
             createGoal(form).then(() => {
-                fetchGoals();
+                fetchGoalsByUserId(user.uid);
                 resetForm();
             }).catch(error => {
                 console.error("Failed to create goal:", error);
@@ -48,7 +48,7 @@ const GoalsPage = () => {
 
     const handleDelete = (goalId) => {
         deleteGoal(goalId).then(() => {
-            fetchGoals();
+            resetForm();
         }).catch(error => {
             console.error("Failed to delete goal:", error);
         });
