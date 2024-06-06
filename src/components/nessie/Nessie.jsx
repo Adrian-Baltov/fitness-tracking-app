@@ -1,9 +1,11 @@
+// src/components/nessie/Nessie.js
 import React, { useEffect, useState } from 'react';
 import nessie from '../../../assets/nessie.jpg';
 import styles from './Nessie.module.css';
 
 const Nessie = () => {
     const [show, setShow] = useState(false);
+    const [hover, setHover] = useState(false);
     const phrases = [
         "You should drink more water.",
         "Keep pushing forward!",
@@ -16,7 +18,7 @@ const Nessie = () => {
         "Stay focused and never quit.",
         "You are doing amazing!"
     ];
-    const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+    const [randomPhrase, setRandomPhrase] = useState(phrases[Math.floor(Math.random() * phrases.length)]);
 
     useEffect(() => {
         setShow(true);
@@ -24,11 +26,20 @@ const Nessie = () => {
         return () => clearTimeout(timer);
     }, []);
 
+    const handleMouseEnter = () => {
+        setRandomPhrase(phrases[Math.floor(Math.random() * phrases.length)]);
+        setHover(true);
+    };
+
+    const handleMouseLeave = () => {
+        setHover(false);
+    };
+
     return (
         <div
-            className={`${styles.nessieContainer} ${show ? styles.show : ''}`}
-            onMouseEnter={() => setShow(true)}
-            onMouseLeave={() => setShow(false)}
+            className={`${styles.nessieContainer} ${show || hover ? styles.show : ''}`}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
         >
             <img src={nessie} alt="Nessie" className={styles.nessieImage} />
             <div className={styles.speechBubble}>{randomPhrase}</div>
