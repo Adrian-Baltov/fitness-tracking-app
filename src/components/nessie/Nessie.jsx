@@ -4,6 +4,7 @@ import styles from './Nessie.module.css';
 
 const Nessie = () => {
     const [show, setShow] = useState(false);
+    const [hover, setHover] = useState(false);
 
     useEffect(() => {
         setShow(true);
@@ -12,7 +13,11 @@ const Nessie = () => {
     }, []);
 
     return (
-        <div className={`${styles.nessieContainer} ${show ? styles.show : ''}`}>
+        <div
+            className={`${styles.nessieContainer} ${show || hover ? styles.show : ''}`}
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={() => setHover(false)}
+        >
             <img src={nessie} alt="Nessie" className={styles.nessieImage} />
             <div className={styles.speechBubble}>You should drink more water</div>
         </div>
