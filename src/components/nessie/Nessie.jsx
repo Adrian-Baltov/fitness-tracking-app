@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import nessie from '../../../assets/nessie.jpg';
 import styles from './Nessie.module.css';
