@@ -19,6 +19,7 @@ const ExercisePage = () => {
     const [selectedDate, setSelectedDate] = useState(null);
     const [exercisesForSelectedDate, setExercisesForSelectedDate] = useState([]);
     const [showModal, setShowModal] = useState(false);
+    const [exerciseToDelete, setExerciseToDelete] = useState(null);
 
     useEffect(() => {
         if (user) {
@@ -74,16 +75,22 @@ const ExercisePage = () => {
         });
         setCurrentExerciseId(exercise.id);
         setIsEditing(true);
-
     };
 
     const handleDelete = (exerciseId) => {
-        deleteExercise(exerciseId).then(() => {
+        setExerciseToDelete(exerciseId);
+        setShowModal(true);
+    };
+
+    const confirmDelete = () => {
+        deleteExercise(exerciseToDelete).then(() => {
             fetchExercises();
         }).catch(error => {
             console.error("Failed to delete exercise:", error);
+        }).finally(() => {
+            setShowModal(false);
+            setExerciseToDelete(null);
         });
-        setShowModal(true);
     };
 
     const resetForm = () => {
@@ -233,6 +240,11 @@ const ExercisePage = () => {
                     )}
                 </tbody>
             </table>
+            <ConfirmationModal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                onConfirm={confirmDelete}
+            />
         </div>
     );
 };
