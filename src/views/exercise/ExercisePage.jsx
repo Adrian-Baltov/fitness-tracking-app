@@ -13,7 +13,7 @@ import Toast from '../../components/toast/Toast';
 import { format } from 'date-fns';
 import { ActivityRings } from "@jonasdoesthings/react-activity-rings";
 import ConfirmationModal from '../../components/confirmationModal/ConfirmationModal';
-import Nessie from '../../components/nessie/Nessie'; // Import the Nessie component
+import Nessie from '../../components/nessie/Nessie';
 import styles from './ExercisePage.module.css';
 
 const ExercisePage = () => {
