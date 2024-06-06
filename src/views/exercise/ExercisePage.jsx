@@ -2,11 +2,17 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useExercise, useGoal } from '../../context';
 import { useAuth } from '../../context';
 import { Calendar } from 'primereact/calendar';
-import styles from './ExercisePage.module.css';
+import { Dropdown } from 'primereact/dropdown';
+import { InputText } from 'primereact/inputtext';
+import { Button } from 'primereact/button';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import { Dialog } from 'primereact/dialog';
+import Toast from '../../components/toast/Toast';
 import { format } from 'date-fns';
 import { ActivityRings } from "@jonasdoesthings/react-activity-rings";
 import ConfirmationModal from '../../components/confirmationModal/ConfirmationModal';
-import Toast from '../../components/toast/Toast';
+import styles from './ExercisePage.module.css';
 
 const ExercisePage = () => {
     const { calendarContainer } = styles;
@@ -20,9 +26,8 @@ const ExercisePage = () => {
     const [selectedDate, setSelectedDate] = useState(null);
     const [exercisesForSelectedDate, setExercisesForSelectedDate] = useState([]);
     const [showModal, setShowModal] = useState(false);
-    const [exerciseToDelete, setExerciseToDelete] = useState(null);
-    const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
+    const [showToast, setShowToast] = useState(false);
 
     useEffect(() => {
         if (user) {
@@ -54,7 +59,8 @@ const ExercisePage = () => {
             updateExercise(currentExerciseId, exerciseData).then(() => {
                 fetchExercises();
                 resetForm();
-                showToastMessage('Exercise updated successfully!');
+                setToastMessage('Exercise updated successfully');
+                setShowToast(true);
             }).catch(error => {
                 console.error("Failed to update exercise:", error);
             });
@@ -62,7 +68,8 @@ const ExercisePage = () => {
             createExercise(exerciseData).then(() => {
                 fetchExercises();
                 resetForm();
-                showToastMessage('Exercise created successfully!');
+                setToastMessage('Exercise created successfully');
+                setShowToast(true);
             }).catch(error => {
                 console.error("Failed to create exercise:", error);
             });
@@ -83,19 +90,20 @@ const ExercisePage = () => {
     };
 
     const handleDelete = (exerciseId) => {
-        setExerciseToDelete(exerciseId);
+        setCurrentExerciseId(exerciseId);
         setShowModal(true);
     };
 
     const confirmDelete = () => {
-        deleteExercise(exerciseToDelete).then(() => {
+        deleteExercise(currentExerciseId).then(() => {
             fetchExercises();
-            showToastMessage('Exercise deleted successfully!');
+            setToastMessage('Exercise deleted successfully');
+            setShowToast(true);
         }).catch(error => {
             console.error("Failed to delete exercise:", error);
         }).finally(() => {
             setShowModal(false);
-            setExerciseToDelete(null);
+            setCurrentExerciseId(null);
         });
     };
 
@@ -105,40 +113,37 @@ const ExercisePage = () => {
         setCurrentExerciseId(null);
     };
 
-    const showToastMessage = (message) => {
-        setToastMessage(message);
-        setShowToast(true);
-    };
-
     if (!user) return <p>Loading user information...</p>;
     if (exercisesLoading || goalsLoading) return <p>Loading...</p>;
     if (exercisesError || goalsError) return <p>Error: {exercisesError?.message || goalsError?.message}</p>;
 
     const inputFieldsData = [
-        { type: 'select', options: ["Select an option", 'Strength', 'Stamina', 'Stretching'], name: 'title', placeholder: 'Title', value: form.title, onChange: handleInputChange, required: true, className: 'input input-bordered w-full' },
-        { type: 'text', name: 'description', placeholder: 'Description', value: form.description, onChange: handleInputChange, required: true, className: 'input input-bordered w-full' },
-        { type: 'text', name: 'duration', placeholder: 'Duration', value: form.duration, onChange: handleInputChange, required: true, className: 'input input-bordered w-full' },
-        { type: 'text', name: 'calories', placeholder: 'Calories', value: form.calories, onChange: handleInputChange, required: true, className: 'input input-bordered w-full' },
+        { type: 'select', options: ["Select an option", 'Strength', 'Stamina', 'Stretching'], name: 'title', placeholder: 'Title', value: form.title, onChange: handleInputChange, required: true, className: 'w-full' },
+        { type: 'text', name: 'description', placeholder: 'Description', value: form.description, onChange: handleInputChange, required: true, className: 'w-full' },
+        { type: 'text', name: 'duration', placeholder: 'Duration', value: form.duration, onChange: handleInputChange, required: true, className: 'w-full' },
+        { type: 'text', name: 'calories', placeholder: 'Calories', value: form.calories, onChange: handleInputChange, required: true, className: 'w-full' },
     ];
 
     const renderInputFields = (inputFieldsData) => {
         return inputFieldsData.map((inputField, index) => (
             <div key={index}>
                 {inputField.type === 'select' ? (
-                    <select name={inputField.name} onChange={inputField.onChange} className={`select select-bordered w-full ${inputField.className}`} value={inputField.value}>
-                        {inputField.options.map(option => (
-                            <option key={option} value={option}>{option}</option>
-                        ))}
-                    </select>
+                    <Dropdown
+                        name={inputField.name}
+                        value={inputField.value}
+                        options={inputField.options.map(option => ({ label: option, value: option }))}
+                        onChange={(e) => handleInputChange({ target: { name: inputField.name, value: e.value } })}
+                        placeholder={inputField.placeholder}
+                        className={inputField.className}
+                    />
                 ) : (
-                    <input
-                        type={inputField.type}
+                    <InputText
                         name={inputField.name}
                         placeholder={inputField.placeholder}
                         value={inputField.value}
-                        onChange={inputField.onChange}
+                        onChange={handleInputChange}
                         required={inputField.required}
-                        className={`input input-bordered w-full ${inputField.className}`}
+                        className={inputField.className}
                     />
                 )}
             </div>
@@ -186,17 +191,19 @@ const ExercisePage = () => {
                     {renderInputLabels(inputFieldsData)}
                     {renderInputFields(inputFieldsData)}
                     <div>
-                        <select name="goalId" onChange={handleInputChange} className="select select-bordered w-full" value={form.goalId}>
-                            <option value="">Select a goal</option>
-                            {goals.map(goal => (
-                                <option key={goal.id} value={goal.id}>{goal.calories} cal, {goal.duration} min ({goal.frequency})</option>
-                            ))}
-                        </select>
+                        <Dropdown
+                            name="goalId"
+                            value={form.goalId}
+                            options={goals.map(goal => ({ label: `${goal.calories} cal, ${goal.duration} min (${goal.frequency})`, value: goal.id }))}
+                            onChange={(e) => handleInputChange({ target: { name: 'goalId', value: e.value } })}
+                            placeholder="Select a goal"
+                            className="w-full"
+                        />
                     </div>
                 </div>
                 <div className="mt-4 flex space-x-2">
-                    <button type="submit" className="btn btn-primary">{isEditing ? 'Update Exercise' : 'Create Exercise'}</button>
-                    {isEditing && <button type="button" onClick={resetForm} className="btn btn-secondary">Cancel</button>}
+                    <Button label={isEditing ? 'Update Exercise' : 'Create Exercise'} type="submit" className="p-button-primary" />
+                    {isEditing && <Button label="Cancel" type="button" onClick={resetForm} className="p-button-secondary" />}
                 </div>
             </form>
             <Calendar
@@ -208,55 +215,42 @@ const ExercisePage = () => {
                 className={calendarContainer}
                 style={{ width: '100%' }}
             />
-            <table className="table w-full mt-4">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Duration (min)</th>
-                        <th>Calories</th>
-                        <th>Date</th>
-                        <th>Goal End Date</th>
-                        <th>Frequency</th>
-                        <th>Goal Calories</th>
-                        <th>Goal Duration</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {exercisesForSelectedDate.map(exercise => {
-                        const goal = goals.find(goal => goal.id === exercise.goalId);
-                        return (
-                            <tr key={exercise.id}>
-                                <td>{exercise.title}</td>
-                                <td>{exercise.description}</td>
-                                <td>{exercise.duration} minutes</td>
-                                <td>{exercise.calories}</td>
-                                <td>{new Date(exercise.createdOn).toLocaleDateString()}</td>
-                                <td>{goal ? new Date(goal.endDate).toLocaleDateString() : 'N/A'}</td>
-                                <td>{goal ? goal.frequency : 'N/A'}</td>
-                                <td>{goal ? goal.calories : 'N/A'}</td>
-                                <td>{goal ? goal.duration : 'N/A'}</td>
-                                <td>
-                                    <button onClick={() => handleEdit(exercise)} className="btn btn-sm btn-warning mr-2">Edit</button>
-                                    <button onClick={() => handleDelete(exercise.id)} className="btn btn-sm btn-error">Delete</button>
-                                </td>
-                            </tr>
-                        );
-                    })}
-                    {exercisesForSelectedDate.length === 0 && (
-                        <tr>
-                            <td colSpan="10">No exercises found for this date.</td>
-                        </tr>
-                    )}
-                </tbody>
-            </table>
+            <DataTable value={exercisesForSelectedDate} showGridlines className="mt-4 p-datatable-gridlines" paginator rows={10}>
+                <Column field="title" header="Name" />
+                <Column field="description" header="Description" />
+                <Column field="duration" header="Duration (min)" />
+                <Column field="calories" header="Calories" />
+                <Column field="createdOn" header="Date" body={rowData => new Date(rowData.createdOn).toLocaleDateString()} />
+                <Column field="goalEndDate" header="Goal End Date" body={rowData => {
+                    const goal = goals.find(goal => goal.id === rowData.goalId);
+                    return goal ? new Date(goal.endDate).toLocaleDateString() : 'N/A';
+                }} />
+                <Column field="goalFrequency" header="Frequency" body={rowData => {
+                    const goal = goals.find(goal => goal.id === rowData.goalId);
+                    return goal ? goal.frequency : 'N/A';
+                }} />
+                <Column field="goalCalories" header="Goal Calories" body={rowData => {
+                    const goal = goals.find(goal => goal.id === rowData.goalId);
+                    return goal ? goal.calories : 'N/A';
+                }} />
+                <Column field="goalDuration" header="Goal Duration" body={rowData => {
+                    const goal = goals.find(goal => goal.id === rowData.goalId);
+                    return goal ? goal.duration : 'N/A';
+                }} />
+                <Column header="Actions" body={rowData => (
+                    <>
+                        <Button icon="pi pi-pencil" className="p-button-warning mr-2" onClick={() => handleEdit(rowData)} />
+                        <Button icon="pi pi-trash" className="p-button-danger" onClick={() => handleDelete(rowData.id)} />
+                    </>
+                )} />
+            </DataTable>
+
+            {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
             <ConfirmationModal
                 isOpen={showModal}
                 onClose={() => setShowModal(false)}
                 onConfirm={confirmDelete}
             />
-            {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
         </div>
     );
 };
