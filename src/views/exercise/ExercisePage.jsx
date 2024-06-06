@@ -6,6 +6,7 @@ import styles from './ExercisePage.module.css';
 import { format } from 'date-fns';
 import { ActivityRings } from "@jonasdoesthings/react-activity-rings";
 import ConfirmationModal from '../../components/confirmationModal/ConfirmationModal';
+import Toast from '../../components/toast/Toast';
 
 const ExercisePage = () => {
     const { calendarContainer } = styles;
@@ -20,6 +21,8 @@ const ExercisePage = () => {
     const [exercisesForSelectedDate, setExercisesForSelectedDate] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [exerciseToDelete, setExerciseToDelete] = useState(null);
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
 
     useEffect(() => {
         if (user) {
@@ -51,6 +54,7 @@ const ExercisePage = () => {
             updateExercise(currentExerciseId, exerciseData).then(() => {
                 fetchExercises();
                 resetForm();
+                showToastMessage('Exercise updated successfully!');
             }).catch(error => {
                 console.error("Failed to update exercise:", error);
             });
@@ -58,6 +62,7 @@ const ExercisePage = () => {
             createExercise(exerciseData).then(() => {
                 fetchExercises();
                 resetForm();
+                showToastMessage('Exercise created successfully!');
             }).catch(error => {
                 console.error("Failed to create exercise:", error);
             });
@@ -85,6 +90,7 @@ const ExercisePage = () => {
     const confirmDelete = () => {
         deleteExercise(exerciseToDelete).then(() => {
             fetchExercises();
+            showToastMessage('Exercise deleted successfully!');
         }).catch(error => {
             console.error("Failed to delete exercise:", error);
         }).finally(() => {
@@ -97,6 +103,11 @@ const ExercisePage = () => {
         setForm({ title: '', description: '', duration: '', calories: '', goalId: '' });
         setIsEditing(false);
         setCurrentExerciseId(null);
+    };
+
+    const showToastMessage = (message) => {
+        setToastMessage(message);
+        setShowToast(true);
     };
 
     if (!user) return <p>Loading user information...</p>;
@@ -245,6 +256,7 @@ const ExercisePage = () => {
                 onClose={() => setShowModal(false)}
                 onConfirm={confirmDelete}
             />
+            {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
         </div>
     );
 };
