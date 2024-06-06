@@ -103,7 +103,7 @@ const ExercisePage = () => {
         return inputFieldsData.map((inputField, index) => (
             <div key={index}>
                 {inputField.type === 'select' ? (
-                    <select name={inputField.name} onChange={inputField.onChange} className={inputField.className} value={inputField.value}>
+                    <select name={inputField.name} onChange={inputField.onChange} className={`select select-bordered w-full ${inputField.className}`} value={inputField.value}>
                         {inputField.options.map(option => (
                             <option key={option} value={option}>{option}</option>
                         ))}
@@ -116,7 +116,7 @@ const ExercisePage = () => {
                         value={inputField.value}
                         onChange={inputField.onChange}
                         required={inputField.required}
-                        className={inputField.className}
+                        className={`input input-bordered w-full ${inputField.className}`}
                     />
                 )}
             </div>
