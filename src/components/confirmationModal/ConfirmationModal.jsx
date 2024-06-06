@@ -5,7 +5,7 @@ const ConfirmationModal = ({ isOpen = false, onClose, onConfirm }) => {
     // if (!isOpen) return null;
 
     return (
-        <Dialog header="Header" visible={isOpen} onHide={onClose}>
+        <Dialog visible={isOpen} onHide={onClose}>
             <h2 className="text-xl mb-4">Are you sure you want to delete this goal?</h2>
             <div className="flex justify-end space-x-2">
                 <button onClick={onConfirm} className="btn btn-error">Yes</button>
