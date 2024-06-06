@@ -1,3 +1,4 @@
+// src/pages/ExercisePage.js
 import React, { useState, useEffect, useRef } from 'react';
 import { useExercise, useGoal } from '../../context';
 import { useAuth } from '../../context';
@@ -12,6 +13,7 @@ import Toast from '../../components/toast/Toast';
 import { format } from 'date-fns';
 import { ActivityRings } from "@jonasdoesthings/react-activity-rings";
 import ConfirmationModal from '../../components/confirmationModal/ConfirmationModal';
+import Nessie from '../../components/nessie/Nessie'; // Import the Nessie component
 import styles from './ExercisePage.module.css';
 
 const ExercisePage = () => {
@@ -185,6 +187,7 @@ const ExercisePage = () => {
 
     return (
         <div className="container mx-auto p-4">
+            <Nessie /> {/* Add the Nessie component */}
             <h2 className="text-2xl font-bold mb-4">Exercises</h2>
             <form onSubmit={handleSubmit} className="mb-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
