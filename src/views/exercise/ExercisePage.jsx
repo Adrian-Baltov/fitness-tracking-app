@@ -9,54 +9,50 @@ import { ActivityRings } from "@jonasdoesthings/react-activity-rings";
 const ExercisePage = () => {
     const { calendarContainer } = styles;
     const calendarRef = useRef(null);
-    const { exercises, loading, error, fetchExercises, createExercise, updateExercise, deleteExercise, fetchExercisesByUserId } = useExercise();
-    const [form, setForm] = useState({ title: '', description: '', duration: '', calories: '', createdOn: '' });
+    const { exercises, loading: exercisesLoading, error: exercisesError, fetchExercises, createExercise, updateExercise, deleteExercise, fetchExercisesByUserId } = useExercise();
+    const { goals, loading: goalsLoading, error: goalsError, fetchGoalsByUserId } = useGoal();
+    const [form, setForm] = useState({ title: '', description: '', duration: '', calories: '', createdOn: '', goalId: '' });
     const [isEditing, setIsEditing] = useState(false);
     const [currentExerciseId, setCurrentExerciseId] = useState(null);
     const { user } = useAuth();
     const [selectedDate, setSelectedDate] = useState(null);
     const [exercisesForSelectedDate, setExercisesForSelectedDate] = useState([]);
-    const { goals } = useGoal()
 
     useEffect(() => {
         if (user) {
-            console.log('Fetching exercises...');
             fetchExercisesByUserId(user.uid);
+            fetchGoalsByUserId(user.uid);
         }
-    }, [user, fetchExercisesByUserId]);
+    }, [user, fetchExercisesByUserId, fetchGoalsByUserId]);
 
     useEffect(() => {
-        console.log('Loading state:', loading);
-        console.log('Exercises:', exercises);
-        console.log('Error:', error);
-    }, [loading, exercises, error]);
-
-    useEffect(() => {
-        const currentDate = calendarRef?.current?.getCurrentDateTime()
-
-        const selectedDateString = currentDate ? currentDate.toDateString() : null;
-        const exercisesForDate = exercises.filter(ex => selectedDateString && new Date(ex.createdOn).toDateString() === selectedDateString);
-
-        setExercisesForSelectedDate(exercisesForDate);
+        if (calendarRef.current) {
+            const currentDate = calendarRef.current.getCurrentDateTime();
+            const selectedDateString = currentDate ? currentDate.toDateString() : null;
+            const exercisesForDate = exercises.filter(ex => selectedDateString && new Date(ex.createdOn).toDateString() === selectedDateString);
+            setExercisesForSelectedDate(exercisesForDate);
+        }
     }, [exercises, selectedDate]);
 
     const handleInputChange = (e) => {
-        const { title, value } = e.target;
-
-        setForm(prevForm => ({ ...prevForm, [title]: value, createdOn: format(calendarRef?.current?.getCurrentDateTime(), 'yyyy-MM-dd HH:mm:ss') }));
+        const { name, value } = e.target;
+        setForm(prevForm => ({ ...prevForm, [name]: value }));
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        const currentDateTime = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
+        const exerciseData = { ...form, createdOn: currentDateTime };
+
         if (isEditing) {
-            updateExercise(currentExerciseId, form).then(() => {
+            updateExercise(currentExerciseId, exerciseData).then(() => {
                 fetchExercises();
                 resetForm();
             }).catch(error => {
                 console.error("Failed to update exercise:", error);
             });
         } else {
-            createExercise(form).then(() => {
+            createExercise(exerciseData).then(() => {
                 fetchExercises();
                 resetForm();
             }).catch(error => {
@@ -71,7 +67,8 @@ const ExercisePage = () => {
             description: exercise.description,
             duration: exercise.duration,
             calories: exercise.calories,
-            createdOn: calendarRef?.current?.getCurrentDateTime()
+            createdOn: calendarRef.current?.getCurrentDateTime(),
+            goalId: exercise.goalId || ''
         });
         setCurrentExerciseId(exercise.id);
         setIsEditing(true);
@@ -86,54 +83,51 @@ const ExercisePage = () => {
     };
 
     const resetForm = () => {
-        setForm({ title: '', description: '', duration: '', calories: '' });
+        setForm({ title: '', description: '', duration: '', calories: '', goalId: '' });
         setIsEditing(false);
         setCurrentExerciseId(null);
     };
 
     if (!user) return <p>Loading user information...</p>;
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error: {error.message}</p>;
-    if (!exercises.length) return <p>No exercises found.</p>;
+    if (exercisesLoading || goalsLoading) return <p>Loading...</p>;
+    if (exercisesError || goalsError) return <p>Error: {exercisesError?.message || goalsError?.message}</p>;
 
     const inputFieldsData = [
-        { type: 'select', options: ["Select an option", 'Strength', 'Stamina', 'Stretching'], title: 'title', placeholder: 'Description', value: 'description', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
-        { type: 'text', title: 'description', placeholder: 'Description', value: 'description', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
-        { type: 'text', title: 'duration', placeholder: 'Duration', value: 'duration', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
-        { type: 'text', title: 'calories', placeholder: 'Calories', value: 'calories', onChange: 'handleInputChange', required: true, className: 'input input-bordered w-full' },
+        { type: 'select', options: ["Select an option", 'Strength', 'Stamina', 'Stretching'], name: 'title', placeholder: 'Title', value: form.title, onChange: handleInputChange, required: true, className: 'input input-bordered w-full' },
+        { type: 'text', name: 'description', placeholder: 'Description', value: form.description, onChange: handleInputChange, required: true, className: 'input input-bordered w-full' },
+        { type: 'text', name: 'duration', placeholder: 'Duration', value: form.duration, onChange: handleInputChange, required: true, className: 'input input-bordered w-full' },
+        { type: 'text', name: 'calories', placeholder: 'Calories', value: form.calories, onChange: handleInputChange, required: true, className: 'input input-bordered w-full' },
     ];
 
     const renderInputFields = (inputFieldsData) => {
-        return inputFieldsData.map((inputField, index) => {
-            return (
-                <div key={index}>
-                    {inputField.type === 'select' ? (
-                        <select title={inputField.title} onChange={handleInputChange} className="select select-bordered w-full max-w-xs" defaultValue="Select an option">
-                            {inputField.options.map((option) => {
-
-                                return <option key={option}>{option}</option>
-                            })}
-                        </select>
-                    ) : (
-                        <input
-                            type={inputField.type}
-                            title={inputField.title}
-                            placeholder={inputField.placeholder}
-                            value={form[inputField.value]}
-                            onChange={inputField.onChange ? handleInputChange : null}
-                            required={inputField.required}
-                            className={inputField.className} />
-                    )}
-                </div>
-            );
-        });
+        return inputFieldsData.map((inputField, index) => (
+            <div key={index}>
+                {inputField.type === 'select' ? (
+                    <select name={inputField.name} onChange={inputField.onChange} className={inputField.className} value={inputField.value}>
+                        {inputField.options.map(option => (
+                            <option key={option} value={option}>{option}</option>
+                        ))}
+                    </select>
+                ) : (
+                    <input
+                        type={inputField.type}
+                        name={inputField.name}
+                        placeholder={inputField.placeholder}
+                        value={inputField.value}
+                        onChange={inputField.onChange}
+                        required={inputField.required}
+                        className={inputField.className}
+                    />
+                )}
+            </div>
+        ));
     };
 
     const renderInputLabels = (inputFieldsData) => {
-        return inputFieldsData.map((inputField, index) => {
-            return <div key={index}>{inputField.placeholder}</div>;
-        });
-    }
+        return inputFieldsData.map((inputField, index) => (
+            <div key={index}>{inputField.placeholder}</div>
+        ));
+    };
 
     const onDateSelect = (e) => {
         const selected = e.value;
@@ -145,11 +139,18 @@ const ExercisePage = () => {
         const dateString = dateObj.toDateString();
         const exerciseDate = exercises.find(ex => new Date(ex.createdOn).toDateString() === dateString);
 
-        // console.error('Exercise date:', dateObj.toLocaleDateString())
-
         if (exerciseDate) {
+            const goal = goals.find(goal => goal.id === exerciseDate.goalId);
+            const caloriesProgress = goal ? Math.min((parseInt(exerciseDate.calories, 10) / parseInt(goal.calories, 10)) * 100, 100) : 0;
+            const durationProgress = goal ? Math.min((parseInt(exerciseDate.duration, 10) / parseInt(goal.duration, 10)) * 100, 100) : 0;
+
+            console.log('Exercise Date:', exerciseDate);
+            console.log('Goal:', goal);
+            console.log('Calories Progress:', caloriesProgress);
+            console.log('Duration Progress:', durationProgress);
+
             return (
-                <DateTemplate date={date} progress={[0.5, 0.9]} />
+                <DateTemplate date={date} progress={[caloriesProgress, durationProgress]} />
             );
         }
         return <div>{date.day}</div>;
@@ -162,6 +163,14 @@ const ExercisePage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {renderInputLabels(inputFieldsData)}
                     {renderInputFields(inputFieldsData)}
+                    <div>
+                        <select name="goalId" onChange={handleInputChange} className="select select-bordered w-full" value={form.goalId}>
+                            <option value="">Select a goal</option>
+                            {goals.map(goal => (
+                                <option key={goal.id} value={goal.id}>{goal.calories} cal, {goal.duration} min ({goal.frequency})</option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
                 <div className="mt-4 flex space-x-2">
                     <button type="submit" className="btn btn-primary">{isEditing ? 'Update Exercise' : 'Create Exercise'}</button>
@@ -185,26 +194,37 @@ const ExercisePage = () => {
                         <th>Duration (min)</th>
                         <th>Calories</th>
                         <th>Date</th>
+                        <th>Goal End Date</th>
+                        <th>Frequency</th>
+                        <th>Goal Calories</th>
+                        <th>Goal Duration</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {exercisesForSelectedDate.map(exercise => (
-                        <tr key={exercise.id}>
-                            <td>{exercise.title}</td>
-                            <td>{exercise.description}</td>
-                            <td>{exercise.duration} minutes</td>
-                            <td>{exercise.calories}</td>
-                            <td>{new Date(exercise.createdOn).toLocaleDateString()}</td>
-                            <td>
-                                <button onClick={() => handleEdit(exercise)} className="btn btn-sm btn-warning mr-2">Edit</button>
-                                <button onClick={() => handleDelete(exercise.id)} className="btn btn-sm btn-error">Delete</button>
-                            </td>
-                        </tr>
-                    ))}
+                    {exercisesForSelectedDate.map(exercise => {
+                        const goal = goals.find(goal => goal.id === exercise.goalId);
+                        return (
+                            <tr key={exercise.id}>
+                                <td>{exercise.title}</td>
+                                <td>{exercise.description}</td>
+                                <td>{exercise.duration} minutes</td>
+                                <td>{exercise.calories}</td>
+                                <td>{new Date(exercise.createdOn).toLocaleDateString()}</td>
+                                <td>{goal ? new Date(goal.endDate).toLocaleDateString() : 'N/A'}</td>
+                                <td>{goal ? goal.frequency : 'N/A'}</td>
+                                <td>{goal ? goal.calories : 'N/A'}</td>
+                                <td>{goal ? goal.duration : 'N/A'}</td>
+                                <td>
+                                    <button onClick={() => handleEdit(exercise)} className="btn btn-sm btn-warning mr-2">Edit</button>
+                                    <button onClick={() => handleDelete(exercise.id)} className="btn btn-sm btn-error">Delete</button>
+                                </td>
+                            </tr>
+                        );
+                    })}
                     {exercisesForSelectedDate.length === 0 && (
                         <tr>
-                            <td colSpan="6">No exercises found for this date.</td>
+                            <td colSpan="10">No exercises found for this date.</td>
                         </tr>
                     )}
                 </tbody>
@@ -215,10 +235,9 @@ const ExercisePage = () => {
 
 export default ExercisePage;
 
-
-export const DateTemplate = ({ date, progress }) => {
+const DateTemplate = ({ date, progress }) => {
     const { dateCell, circlesContainer } = styles;
-    const [calories, duration] = progress
+    const [calories, duration] = progress;
 
     return (
         <div className={dateCell}>
@@ -237,8 +256,7 @@ export const DateTemplate = ({ date, progress }) => {
                     }}
                 />
             </div>
-
             {date.day}
         </div>
     );
-}
+};
