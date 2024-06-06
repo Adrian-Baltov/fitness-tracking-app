@@ -1,0 +1,43 @@
+.nessieContainer {
+    position: fixed;
+    bottom: 20px;
+    right: -200px;
+    display: flex;
+    align-items: center;
+    transition: right 0.5s ease-in-out;
+}
+
+.nessieContainer.show {
+    right: 20px;
+}
+
+.nessieImage {
+    width: 100px;
+    height: auto;
+}
+
+.speechBubble {
+    position: relative;
+    background: #00aaff;
+    border-radius: .4em;
+    padding: 10px;
+    margin-left: 10px;
+    color: white;
+    font-size: 14px;
+    text-align: center;
+}
+
+.speechBubble:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    border: 15px solid transparent;
+    border-top-color: #00aaff;
+    border-bottom: 0;
+    border-left: 0;
+    margin-left: -7.5px;
+    margin-bottom: -15px;
+}
