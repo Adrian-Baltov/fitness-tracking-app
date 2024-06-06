@@ -1,4 +1,3 @@
-// src/pages/ExercisePage.js
 import React, { useState, useEffect, useRef } from 'react';
 import { useExercise, useGoal } from '../../context';
 import { useAuth } from '../../context';
