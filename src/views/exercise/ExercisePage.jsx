@@ -5,6 +5,7 @@ import { Calendar } from 'primereact/calendar';
 import styles from './ExercisePage.module.css';
 import { format } from 'date-fns';
 import { ActivityRings } from "@jonasdoesthings/react-activity-rings";
+import ConfirmationModal from '../../components/confirmationModal/ConfirmationModal';
 
 const ExercisePage = () => {
     const { calendarContainer } = styles;
@@ -17,6 +18,7 @@ const ExercisePage = () => {
     const { user } = useAuth();
     const [selectedDate, setSelectedDate] = useState(null);
     const [exercisesForSelectedDate, setExercisesForSelectedDate] = useState([]);
+    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         if (user) {
@@ -72,6 +74,7 @@ const ExercisePage = () => {
         });
         setCurrentExerciseId(exercise.id);
         setIsEditing(true);
+
     };
 
     const handleDelete = (exerciseId) => {
@@ -80,6 +83,7 @@ const ExercisePage = () => {
         }).catch(error => {
             console.error("Failed to delete exercise:", error);
         });
+        setShowModal(true);
     };
 
     const resetForm = () => {
@@ -141,8 +145,8 @@ const ExercisePage = () => {
 
         if (exerciseDate) {
             const goal = goals.find(goal => goal.id === exerciseDate.goalId);
-            const caloriesProgress = goal ? Math.min((parseInt(exerciseDate.calories, 10) / parseInt(goal.calories, 10)) * 100, 100) : 0;
-            const durationProgress = goal ? Math.min((parseInt(exerciseDate.duration, 10) / parseInt(goal.duration, 10)) * 100, 100) : 0;
+            const caloriesProgress = goal ? Math.min((parseInt(exerciseDate.calories, 10) / parseInt(goal.calories, 10)), 100) : 0;
+            const durationProgress = goal ? Math.min((parseInt(exerciseDate.duration, 10) / parseInt(goal.duration, 10)), 100) : 0;
 
             console.log('Exercise Date:', exerciseDate);
             console.log('Goal:', goal);
