@@ -7,6 +7,7 @@ import { onValue } from "firebase/database";
 import { useFetcher } from "react-router-dom";
 import { db } from '../../../firebase/firebase-config.js';
 import { ref } from "firebase/database";
+import FriendNotification from "./FriendNotification.jsx";
 
 
 const Notifications = () => {
@@ -45,26 +46,24 @@ const Notifications = () => {
 
 
     return (
-        <div className="flex flex-col">
-            <button onClick={() => setExpandNotifications(!expandNotifications)}>
+        <div className="relative">
+            <button  className=''onClick={() => setExpandNotifications(!expandNotifications)}>
                 <FaBell />
             </button>
 
             {expandNotifications && (
-                <div className='notifications'>
-                    <h2>Notifications</h2>
+                <section className='absolute top-0 right-0 mt-7 bg-white w-64 rounded-lg shadow-lg z-20 p-4'>
+                    <h2 className="font-bold text-lg mb-4">Notifications</h2>
                    
                     <ul tabIndex={0} className="dropdown-content z-[500] menu p-2 shadow bg-base-100 rounded-box w-52">
     {notifications.map((notification) => {
-                            return (
-                                <div key={notification.from}>
-                                    <p>{notification.from} {notification.type}</p>
-                                </div>
-                            )
+                           if (notification.type === 'friendRequest') {
+                               return <FriendNotification notification={notification} key={notification.from} />
+                           }
                         })}
   </ul>
                         
-                    </div>
+                    </section>
                
             
             )}

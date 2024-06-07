@@ -1,6 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { useUser } from '../../context/UserContext';
+import { checkIfFriends } from '../../utils/utils';
 
 
 const UserList = ({ users }) => {
@@ -98,7 +99,13 @@ const UserList = ({ users }) => {
                          
                             content = <div className="badge badge-accent w-full">Request pending</div>;
 
-                        } else {
+
+                          }  else if (checkIfFriends(currentUser, user)) {
+                            content = <span>Friends</span>
+
+                           }
+
+                         else {
                             content = (
                                 <label>
                                     <button className="" onClick={() => handleAddFriend(user)} >Add friend</button>

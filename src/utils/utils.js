@@ -1,5 +1,7 @@
-import { ref, get, query } from "firebase/database";
+import { ref, get, query, update } from "firebase/database";
 import { db } from '../../firebase/firebase-config';
+
+
 
 export const fetchData = async (collectionName, setLoading, setData, setError) => {
     setLoading(true);
@@ -55,3 +57,24 @@ export const searchAllUsers = async (search = '') => {
         console.log('Errro searching users: ', error);
     }
 };   
+
+
+export const deleteUserFromDifferentRefs = async (refPATH, username) => {
+    try {
+        const refference = ref(db, refPATH);
+        update(refference, {
+            [username]: null
+        });
+    } catch (error) {
+        console.log('Error deleting user from ref: ', error);
+    }
+};
+
+
+export const checkIfFriends = (currentUser, user) => {
+    if (currentUser.friends && currentUser.friends.hasOwnProperty(user.username)) {
+        return true;
+    } else {
+        return false;
+    }
+}
