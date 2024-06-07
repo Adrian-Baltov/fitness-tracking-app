@@ -56,7 +56,6 @@ const Header = () => {
                     {showDropdown && (
                         <div className={dropdownMenu}>
                             <NavLink to="/user-profile">Profile</NavLink>
-                            {userData && userData.role === 'admin' && <NavLink to="/admin">Admin Panel</NavLink>}
                             <button onClick={handleLogout}>Logout</button>
                         </div>
                     )}
