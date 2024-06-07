@@ -12,7 +12,7 @@ import AuthPage from './views/AuthPage'
 import { Header, NavBar } from './components'
 import styles from './App.module.css'
 import ExercisePage from './views/exercise/ExercisePage'
-import { FaHome, FaDumbbell, FaBullseye, FaTachometerAlt } from 'react-icons/fa';
+import { FaHome, FaDumbbell, FaBullseye, FaTachometerAlt, FaUserFriends } from 'react-icons/fa';
 import FriendsPage from './views/FriendsPage'
 import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
@@ -27,6 +27,7 @@ function App() {
     { title: 'Dashboard', route: '/dashboard', icon: <FaTachometerAlt /> },
     { title: 'Exercises', route: '/exercises', icon: <FaDumbbell /> },
     { title: 'Goals', route: '/goals', icon: <FaBullseye /> },
+    { title: 'Search Users', route: '/search/friends', icon: <FaUserFriends  />}
   ];
 
   const { appContainer, container, navBarContainer, content } = styles
