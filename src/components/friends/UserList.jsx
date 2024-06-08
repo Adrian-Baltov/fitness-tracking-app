@@ -4,7 +4,7 @@ import { useUser } from '../../context/UserContext';
 import { checkIfFriends } from '../../utils/utils.js';
 import { db } from '../../../firebase/firebase-config';
 import { ref } from 'firebase/database';
-
+import { useHandleAccept } from '../../utils/utils.js';
 import { onValue } from 'firebase/database';
 
 
@@ -16,6 +16,8 @@ const UserList = ({ users }) => {
     const [notifications, setNotifications] = useState({});
     const [friends, setFriends] = useState({});
     const [friendRequests, setFriendRequests] = useState({});
+    const handleAccept = useHandleAccept();
+    const [fromUserData, setFromUserData] = useState(null);
 
 
     const isCurrentUser = (user, currentUser) => {
@@ -35,9 +37,9 @@ const UserList = ({ users }) => {
             type: 'friendRequest',
             from: currentUser.username
         }
-        const notifications = userToAdd.notifications ? { ...userToAdd.notifications, [currentUser.username]: newNotification } 
-        :
-         { [currentUser.username]: newNotification };
+        const notifications = userToAdd.notifications ? { ...userToAdd.notifications, [currentUser.username]: newNotification }
+            :
+            { [currentUser.username]: newNotification };
         userContext.updateUser(userToAdd.username, { notifications: notifications })
 
 
@@ -45,10 +47,10 @@ const UserList = ({ users }) => {
             return { ...prevState, [userToAdd.uid]: true }; // for immeadiate UI update
         });
 
-     
-    
 
-      
+
+
+
 
         const sentRequests = currentUser.sentRequests || {};
         const newRequest = {
@@ -60,13 +62,13 @@ const UserList = ({ users }) => {
 
 
         userContext.updateUser(currentUser.username, { sentRequests: sentRequests });
-        
+
         setSentRequests(sentRequests);
     }
 
 
 
-   // Update the requestsPending state when the users array changes
+    // Update the requestsPending state when the users array changes
     useEffect(() => {
         setRequestsPending(prevState => {
             const pendingRequests = { ...prevState }; // Copy the previous state
@@ -82,24 +84,28 @@ const UserList = ({ users }) => {
     }, [users]);
 
     useEffect(() => {
-     setFriendRequests(currentUser?.friendRequests || {});
+        setFriendRequests(currentUser?.friendRequests || {});
 
     }, [currentUser])
 
-    
 
 
- useEffect(() => {
-   const friendsRef = ref(db, `users/${currentUser?.username}/friends`);
-    onValue(friendsRef, (snapshot) => {
-        if (snapshot.exists()) {
-            const friends = snapshot.val();
-            setFriends(friends);
-        } else {
-            setFriends({});
-        }
-    });
- }, [currentUser])
+
+    useEffect(() => {
+        const friendsRef = ref(db, `users/${currentUser?.username}/friends`);
+        onValue(friendsRef, (snapshot) => {
+            if (snapshot.exists()) {
+                const friends = snapshot.val();
+                setFriends(friends);
+            } else {
+                setFriends({});
+            }
+        });
+    }, [currentUser])
+
+    const onAccept = (user, setFromUserData, fromUserData) => {
+        handleAccept(user, setFromUserData, fromUserData);
+    }
 
 
 
@@ -119,21 +125,21 @@ const UserList = ({ users }) => {
                             content = <span>Current User</span>
 
                         } else if (requestsPending[user.uid]) {
-                         
+
                             content = <div className="badge badge-accent w-full">Request pending</div>;
 
 
-                          }  else if (checkIfFriends(friends, user)) {
+                        } else if (checkIfFriends(friends, user)) {
                             content = <span>Friends</span>
 
-                           }
-
-                           else if (friendRequests.hasOwnProperty(user.username)) {
-                            content = <span> <button class="btn btn-primary">Accept</button>
-                            <button class="btn btn-secondary">Decline</button> </span>
                         }
 
-                         else {
+                        else if (friendRequests.hasOwnProperty(user.username)) {
+                            content = <span> <button class="btn btn-primary" onClick={() => onAccept(user.username, setFromUserData, fromUserData)}>Accept</button>
+                                <button class="btn btn-secondary">Decline</button> </span>
+                        }
+
+                        else {
                             content = (
                                 <label>
                                     <button className="" onClick={() => handleAddFriend(user)} >Add friend</button>

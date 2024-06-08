@@ -8,12 +8,16 @@ import { useHandleAccept } from "../../utils/utils.js";
 
 
 
+import { onValue } from "firebase/database";
+import { useEffect} from "react";
+
+
 const FriendNotification = ({ notification }) => {
     const { from, type } = notification;
-    const [fromUserData, setFromUserData] = useState(null);
+    const [fromUserData, setFromUserData] = useState({});
     const handleAccept = useHandleAccept();
 
-   const onAccept = () => {
+   const onAccept = (from, setFromUserData, fromUserData) => {
          handleAccept(from, setFromUserData, fromUserData);
    }
 
@@ -22,7 +26,7 @@ const FriendNotification = ({ notification }) => {
         <div>
             <li className='p-4'>You have a new friend request from {from} !</li>
              <div className="flex">
-                <button className="btn btn-primary" onClick={onAccept}>Accept</button>
+                <button className="btn btn-primary" onClick={() =>  onAccept(from, setFromUserData, fromUserData)}>Accept</button>
                 <button className="btn btn-secondary">Decline</button>
              </div>
         </div>
