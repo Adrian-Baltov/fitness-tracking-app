@@ -128,3 +128,17 @@ export const useHandleAccept = () => {
     return handleAccept;
 
 }
+
+export const useHandleDecline = () => {
+    const { userData } = useUser();
+    const handleDecline = async (from) => {
+        const notificationsRef = `users/${userData?.username}/notifications`;
+        const friendRequestsRef = `users/${userData?.username}/friendRequests`;
+        const sentRequestsRef = `users/${from}/sentRequests`;
+        await deleteUserFromDifferentRefs(notificationsRef, from);
+        await deleteUserFromDifferentRefs(friendRequestsRef, from);
+        await deleteUserFromDifferentRefs(sentRequestsRef, userData.username);
+        await deleteUserFromDifferentRefs(friendRequestsRef, userData.username);
+    }
+    return handleDecline;
+}

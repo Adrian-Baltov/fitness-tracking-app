@@ -4,7 +4,7 @@ import { useUser } from '../../context/UserContext';
 import { checkIfFriends } from '../../utils/utils.js';
 import { db } from '../../../firebase/firebase-config';
 import { ref } from 'firebase/database';
-import { useHandleAccept } from '../../utils/utils.js';
+import { useHandleAccept, useHandleDecline } from '../../utils/utils.js';
 import { onValue } from 'firebase/database';
 
 
@@ -17,6 +17,7 @@ const UserList = ({ users }) => {
     const [friends, setFriends] = useState({});
     const [friendRequests, setFriendRequests] = useState({});
     const handleAccept = useHandleAccept();
+    const handleDecline = useHandleDecline();
     const [fromUserData, setFromUserData] = useState(null);
 
 
@@ -64,6 +65,7 @@ const UserList = ({ users }) => {
         userContext.updateUser(currentUser.username, { sentRequests: sentRequests });
 
         setSentRequests(sentRequests);
+      
     }
 
 
@@ -81,13 +83,21 @@ const UserList = ({ users }) => {
             });
             return pendingRequests; // Return the updated state
         });
+        
     }, [users]);
 
-    useEffect(() => {
-        setFriendRequests(currentUser?.friendRequests || {});
-
-    }, [currentUser])
-
+ 
+  useEffect(() => {
+     const friendReuquestsRef = ref(db, `users/${currentUser?.username}/friendRequests`);
+        onValue(friendReuquestsRef, (snapshot) => {
+            if (snapshot.exists()) {
+                const friendRequests = snapshot.val();
+                setFriendRequests(friendRequests);
+            } else {
+                setFriendRequests({});
+            }
+        });
+  }, [currentUser])
 
 
 
@@ -105,6 +115,10 @@ const UserList = ({ users }) => {
 
     const onAccept = (user, setFromUserData, fromUserData) => {
         handleAccept(user, setFromUserData, fromUserData);
+    }
+
+    const onDecline = (user) => {
+        handleDecline(user);
     }
 
 
@@ -136,7 +150,7 @@ const UserList = ({ users }) => {
 
                         else if (friendRequests.hasOwnProperty(user.username)) {
                             content = <span> <button class="btn btn-primary" onClick={() => onAccept(user.username, setFromUserData, fromUserData)}>Accept</button>
-                                <button class="btn btn-secondary">Decline</button> </span>
+                                <button class="btn btn-secondary" onClick={() => onDecline(user.username)}>Decline</button> </span>
                         }
 
                         else {
