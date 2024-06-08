@@ -27,6 +27,8 @@ const Notifications = () => {
                            
                         const notificationsList = Object.keys(notificationsData).map(key => ({...notificationsData[key] }));
                         setNotifications(notificationsList);
+                   } else {
+                          setNotifications([]);
                    }
                 
               
@@ -35,11 +37,9 @@ const Notifications = () => {
             }
 
         }
-        const unsubscribe = onValue(notificationsRef, fetchNotifications)
+        onValue(notificationsRef, fetchNotifications)
 
-        return () => {
-            unsubscribe();
-        }
+        
 
     }, [userData])
 

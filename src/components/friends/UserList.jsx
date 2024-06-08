@@ -1,7 +1,11 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { useUser } from '../../context/UserContext';
-import { checkIfFriends } from '../../utils/utils';
+import { checkIfFriends } from '../../utils/utils.js';
+import { db } from '../../../firebase/firebase-config';
+import { ref } from 'firebase/database';
+
+import { onValue } from 'firebase/database';
 
 
 const UserList = ({ users }) => {
@@ -10,6 +14,8 @@ const UserList = ({ users }) => {
     const [requestsPending, setRequestsPending] = useState(false);
     const [sentRequests, setSentRequests] = useState({});
     const [notifications, setNotifications] = useState({});
+    const [friends, setFriends] = useState({});
+    const [friendRequests, setFriendRequests] = useState({});
 
 
     const isCurrentUser = (user, currentUser) => {
@@ -74,10 +80,27 @@ const UserList = ({ users }) => {
             return pendingRequests; // Return the updated state
         });
     }, [users]);
-  
+
+    useEffect(() => {
+     setFriendRequests(currentUser?.friendRequests || {});
+
+    }, [currentUser])
+
+    
 
 
-  
+ useEffect(() => {
+   const friendsRef = ref(db, `users/${currentUser?.username}/friends`);
+    onValue(friendsRef, (snapshot) => {
+        if (snapshot.exists()) {
+            const friends = snapshot.val();
+            setFriends(friends);
+        } else {
+            setFriends({});
+        }
+    });
+ }, [currentUser])
+
 
 
     return (
@@ -100,10 +123,15 @@ const UserList = ({ users }) => {
                             content = <div className="badge badge-accent w-full">Request pending</div>;
 
 
-                          }  else if (checkIfFriends(currentUser, user)) {
+                          }  else if (checkIfFriends(friends, user)) {
                             content = <span>Friends</span>
 
                            }
+
+                           else if (friendRequests.hasOwnProperty(user.username)) {
+                            content = <span> <button class="btn btn-primary">Accept</button>
+                            <button class="btn btn-secondary">Decline</button> </span>
+                        }
 
                          else {
                             content = (
