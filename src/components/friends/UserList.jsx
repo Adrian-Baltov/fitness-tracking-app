@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { useUser } from '../../context/UserContext';
-import { checkIfFriends } from '../../utils/utils.js';
+import { blockAccount, checkIfFriends, deleteAccount, unblockAccount } from '../../utils/utils.js';
 import { db } from '../../../firebase/firebase-config';
 import { ref } from 'firebase/database';
 import { useHandleAccept, useHandleDecline } from '../../utils/utils.js';
@@ -9,6 +9,7 @@ import { onValue } from 'firebase/database';
 import { useRouteError } from 'react-router-dom';
 import PeopleIcon from '@mui/icons-material/People';
 import EmailIcon from '@mui/icons-material/Email';
+import { deleteUser } from 'firebase/auth';
 
 
 const UserList = ({ users }) => {
@@ -36,6 +37,10 @@ const UserList = ({ users }) => {
         }
         return false;
     };
+
+    const handleDeleteUser = async (username) => {
+        await deleteAccount(username);
+    }
 
 
     /** 
@@ -229,7 +234,16 @@ const UserList = ({ users }) => {
                             <th>
 
                             </th>
-
+                            {currentUser.role === 'admin' && user.username !== currentUser.username &&
+                            <th>
+                                <button className="btn btn-ghost btn-xs" onClick={() => handleDeleteUser(user?.username)}>delete</button>
+                                 </th>}
+                            {currentUser.role === 'admin' && user.username !== currentUser.username &&
+                                <th>
+                                    {user.isBlocked ? <button className="btn btn-ghost btn-xs" onClick={ () => unblockAccount(user?.username)}>unblock</button> :
+                            <button className="btn btn-ghost btn-xs" onClick={ () => blockAccount(user?.username)}>block</button> }
+                                </th>
+                            }
                         </tr>
 
                     })}
