@@ -1,6 +1,5 @@
 // src/components/nessie/Nessie.js
 import React, { useEffect, useState } from 'react';
-import nessie from '../../../assets/nessie.jpg';
 import styles from './Nessie.module.css';
 
 const Nessie = () => {
@@ -41,7 +40,7 @@ const Nessie = () => {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
-            <img src={nessie} alt="Nessie" className={styles.nessieImage} />
+            <img src='../../../assets/nessie.png' alt="Nessie" className={styles.nessieImage} />
             <div className={styles.speechBubble}>{randomPhrase}</div>
         </div>
     );
