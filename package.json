@@ -19,6 +19,7 @@
     "@jonasdoesthings/react-activity-rings": "^1.1.2",
     "@mui/icons-material": "^5.15.19",
     "@mui/material": "^5.15.19",
+    "chart.js": "^4.4.3",
     "date-fns": "^3.6.0",
     "firebase": "^10.12.0",
     "localforage": "^1.10.0",
