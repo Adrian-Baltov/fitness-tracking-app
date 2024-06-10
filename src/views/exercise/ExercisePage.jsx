@@ -7,16 +7,16 @@ import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { Dialog } from 'primereact/dialog';
 import Toast from '../../components/toast/Toast';
 import { format } from 'date-fns';
-import { ActivityRings } from "@jonasdoesthings/react-activity-rings";
 import ConfirmationModal from '../../components/confirmationModal/ConfirmationModal';
 import Nessie from '../../components/nessie/Nessie';
 import styles from './ExercisePage.module.css';
+import Streak from '../../components/streak/Streak';
+import { ActivityRings } from "@jonasdoesthings/react-activity-rings";
 
 const ExercisePage = () => {
-    const { calendarContainer } = styles;
+    const { calendarContainer, container, contentContainer, dropdownContainer, dropdownLabels, dropdowns } = styles;
     const calendarRef = useRef(null);
     const { exercises, loading: exercisesLoading, error: exercisesError, fetchExercises, createExercise, updateExercise, deleteExercise, fetchExercisesByUserId } = useExercise();
     const { goals, loading: goalsLoading, error: goalsError, fetchGoalsByUserId } = useGoal();
@@ -172,11 +172,6 @@ const ExercisePage = () => {
             const caloriesProgress = goal ? Math.min((parseInt(exerciseDate.calories, 10) / parseInt(goal.calories, 10)), 100) : 0;
             const durationProgress = goal ? Math.min((parseInt(exerciseDate.duration, 10) / parseInt(goal.duration, 10)), 100) : 0;
 
-            console.log('Exercise Date:', exerciseDate);
-            console.log('Goal:', goal);
-            console.log('Calories Progress:', caloriesProgress);
-            console.log('Duration Progress:', durationProgress);
-
             return (
                 <DateTemplate date={date} progress={[caloriesProgress, durationProgress]} />
             );
@@ -185,14 +180,17 @@ const ExercisePage = () => {
     };
 
     return (
-        <div className="container mx-auto p-4">
-            <Nessie /> {/* Add the Nessie component */}
-            <h2 className="text-2xl font-bold mb-4">Exercises</h2>
+        <div className={`${container} mx-auto`}>
+            <Nessie />
+            <h1>Exercises</h1>
             <form onSubmit={handleSubmit} className="mb-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {renderInputLabels(inputFieldsData)}
-                    {renderInputFields(inputFieldsData)}
-                    <div>
+                <div className={dropdownContainer}>
+                    <div className={dropdownLabels}>
+                        {renderInputLabels(inputFieldsData)}
+                    </div>
+
+                    <div className={dropdowns}>
+                        {renderInputFields(inputFieldsData)}
                         <Dropdown
                             name="goalId"
                             value={form.goalId}
@@ -208,51 +206,67 @@ const ExercisePage = () => {
                     {isEditing && <Button label="Cancel" type="button" onClick={resetForm} className="p-button-secondary" />}
                 </div>
             </form>
-            <Calendar
-                ref={calendarRef}
-                value={selectedDate}
-                onChange={onDateSelect}
-                inline
-                dateTemplate={dateTemplate}
-                className={calendarContainer}
-                style={{ width: '100%' }}
-            />
-            <DataTable value={exercisesForSelectedDate} showGridlines className="mt-4 p-datatable-gridlines" paginator rows={10}>
-                <Column field="title" header="Name" />
-                <Column field="description" header="Description" />
-                <Column field="duration" header="Duration (min)" />
-                <Column field="calories" header="Calories" />
-                <Column field="createdOn" header="Date" body={rowData => new Date(rowData.createdOn).toLocaleDateString()} />
-                <Column field="goalEndDate" header="Goal End Date" body={rowData => {
-                    const goal = goals.find(goal => goal.id === rowData.goalId);
-                    return goal ? new Date(goal.endDate).toLocaleDateString() : 'N/A';
-                }} />
-                <Column field="goalFrequency" header="Frequency" body={rowData => {
-                    const goal = goals.find(goal => goal.id === rowData.goalId);
-                    return goal ? goal.frequency : 'N/A';
-                }} />
-                <Column field="goalCalories" header="Goal Calories" body={rowData => {
-                    const goal = goals.find(goal => goal.id === rowData.goalId);
-                    return goal ? goal.calories : 'N/A';
-                }} />
-                <Column field="goalDuration" header="Goal Duration" body={rowData => {
-                    const goal = goals.find(goal => goal.id === rowData.goalId);
-                    return goal ? goal.duration : 'N/A';
-                }} />
-                <Column header="Actions" body={rowData => (
-                    <>
-                        <Button icon="pi pi-pencil" className="p-button-warning mr-2" onClick={() => handleEdit(rowData)} />
-                        <Button icon="pi pi-trash" className="p-button-danger" onClick={() => handleDelete(rowData.id)} />
-                    </>
-                )} />
-            </DataTable>
+            <div className={contentContainer}>
+                <Calendar
+                    ref={calendarRef}
+                    value={selectedDate}
+                    onChange={onDateSelect}
+                    inline
+                    dateTemplate={dateTemplate}
+                    className={calendarContainer}
+                    style={{ width: '100%', opacity: 0.9 }}
+                />
+                <table className="table w-full mt-4">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Duration (min)</th>
+                            <th>Calories</th>
+                            <th>Date</th>
+                            <th>Goal End Date</th>
+                            <th>Frequency</th>
+                            <th>Goal Calories</th>
+                            <th>Goal Duration</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {exercisesForSelectedDate.map(exercise => {
+                            const goal = goals.find(goal => goal.id === exercise.goalId);
+                            return (
+                                <tr key={exercise.id}>
+                                    <td>{exercise.title}</td>
+                                    <td>{exercise.description}</td>
+                                    <td>{exercise.duration} minutes</td>
+                                    <td>{exercise.calories}</td>
+                                    <td>{new Date(exercise.createdOn).toLocaleDateString()}</td>
+                                    <td>{goal ? new Date(goal.endDate).toLocaleDateString() : 'N/A'}</td>
+                                    <td>{goal ? goal.frequency : 'N/A'}</td>
+                                    <td>{goal ? goal.calories : 'N/A'}</td>
+                                    <td>{goal ? goal.duration : 'N/A'}</td>
+                                    <td>
+                                        <button onClick={() => handleEdit(exercise)} className="btn btn-sm btn-warning mr-2">Edit</button>
+                                        <button onClick={() => handleDelete(exercise.id)} className="btn btn-sm btn-error">Delete</button>
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                        {exercisesForSelectedDate.length === 0 && (
+                            <tr>
+                                <td colSpan="10">No exercises found for this date.</td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+                {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
+                <ConfirmationModal
+                    isOpen={showModal}
+                    onClose={() => setShowModal(false)}
+                    onConfirm={confirmDelete}
+                />
+            </div>
 
-            {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
-            <ConfirmationModal
-                isOpen={showModal}
-                onClose={() => setShowModal(false)}
-                onConfirm={confirmDelete}
-            />
         </div>
     );
 };
