@@ -27,6 +27,13 @@ export const fetchData = async (collectionName, setLoading, setData, setError) =
     }
 };
 
+
+/**
+ * Function to get all users
+ * 
+ * @returns {Promise} - array of all users
+ */
+
 export const getAllUsersArray = async () => {
     const usersRef = ref(db, 'users');
     const usersSnapshot = await get(usersRef);
@@ -45,6 +52,12 @@ export const getAllUsersArray = async () => {
 
 };
 
+/**
+ * Function to search all users
+ * 
+ * @param {string} search - search query 
+ * @returns  {Promise} - array of users that match the search query
+ */
 export const searchAllUsers = async (search = '') => {
     try {
         const usersArray = await getAllUsersArray();
@@ -63,7 +76,12 @@ export const searchAllUsers = async (search = '') => {
     }
 };
 
-
+/**
+ *  Function to delete user from different references
+ * 
+ * @param {string} refPATH - path to the reference 
+ * @param {string} username - username of the user to delete 
+ */
 export const deleteUserFromDifferentRefs = async (refPATH, username) => {
     try {
         const refference = ref(db, refPATH);
@@ -77,7 +95,13 @@ export const deleteUserFromDifferentRefs = async (refPATH, username) => {
 
 
 
-
+/**
+ * Custom hook to handle sending friend requests
+ * 
+ * @param {Object} currUserFriendsObj 
+ * @param {Object} user 
+ * @returns  {boolean} - true if the user is already a friend, false if not
+ */
 
 export const checkIfFriends = (currUserFriendsObj, user) => {
 
@@ -90,55 +114,74 @@ export const checkIfFriends = (currUserFriendsObj, user) => {
 
 
 }
-/*
-  Custom hook to handle accepting friend requests
-*/
+/**
+ * Custom hook to handle accepting friend requests
+ * 
+ * @returns {function} handleAccept - function to handle accepting friend requests
+ */
 export const useHandleAccept = () => {
 
     const { userData, getUserByName, updateUser } = useUser();
     const handleAccept = async (from, setFromUserData, fromUserData) => {
-        const notificationsRef = `users/${userData?.username}/notifications`;
-        const friendRequestsRef = `users/${userData?.username}/friendRequests`;
-        const sentRequestsRef = `users/${from}/sentRequests`;
-        await deleteUserFromDifferentRefs(notificationsRef, from);
-        await deleteUserFromDifferentRefs(friendRequestsRef, from);
-        await deleteUserFromDifferentRefs(sentRequestsRef, userData.username);
-        await deleteUserFromDifferentRefs(friendRequestsRef, userData.username);
+        try {
+            const notificationsRef = `users/${userData?.username}/notifications`;
+            const friendRequestsRef = `users/${userData?.username}/friendRequests`;
+            const sentRequestsRef = `users/${from}/sentRequests`;
+            await deleteUserFromDifferentRefs(notificationsRef, from);
+            await deleteUserFromDifferentRefs(friendRequestsRef, from);
+            await deleteUserFromDifferentRefs(sentRequestsRef, userData.username);
+            await deleteUserFromDifferentRefs(friendRequestsRef, userData.username);
 
 
-        const currUserUsername = userData.username;
-        getUserByName(from)
-            .then((snapshot) => {
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    setFromUserData(data);
-                }
+            const currUserUsername = userData.username;
+            getUserByName(from)
+                .then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const data = snapshot.val();
+                        setFromUserData(data);
+                    }
 
-            })
-            .catch((error) => {
-                console.log('Error getting user data: ', error);
-            });
+                })
+                .catch((error) => {
+                    console.log('Error getting user data: ', error);
+                });
 
 
-        const fromUserFriends = fromUserData?.friends ? { ...fromUserData.friends, [currUserUsername]: true } : { [currUserUsername]: true };
-        const currentUserFriends = userData?.friends ? { ...userData.friends, [from]: true } : { [from]: true };
-        updateUser(currUserUsername, { friends: currentUserFriends });
-        updateUser(from, { friends: fromUserFriends });
+            const fromUserFriends = fromUserData?.friends ? { ...fromUserData.friends, [currUserUsername]: true } : { [currUserUsername]: true };
+            const currentUserFriends = userData?.friends ? { ...userData.friends, [from]: true } : { [from]: true };
+            updateUser(currUserUsername, { friends: currentUserFriends });
+            updateUser(from, { friends: fromUserFriends });
+        } catch (error) {
+            console.log('Error accepting friend request: ', error)
+        }
+
     }
     return handleAccept;
 
 }
 
+
+/**
+ * Custom hook to handle declining friend requests
+ * 
+ * @param {string} from - username of the user who sent the friend request
+ * @returns {function} handleDecline - function to handle declining friend requests
+ */
 export const useHandleDecline = () => {
     const { userData } = useUser();
     const handleDecline = async (from) => {
-        const notificationsRef = `users/${userData?.username}/notifications`;
-        const friendRequestsRef = `users/${userData?.username}/friendRequests`;
-        const sentRequestsRef = `users/${from}/sentRequests`;
-        await deleteUserFromDifferentRefs(notificationsRef, from);
-        await deleteUserFromDifferentRefs(friendRequestsRef, from);
-        await deleteUserFromDifferentRefs(sentRequestsRef, userData.username);
-        await deleteUserFromDifferentRefs(friendRequestsRef, userData.username);
+        try {
+            const notificationsRef = `users/${userData?.username}/notifications`;
+            const friendRequestsRef = `users/${userData?.username}/friendRequests`;
+            const sentRequestsRef = `users/${from}/sentRequests`;
+            await deleteUserFromDifferentRefs(notificationsRef, from);
+            await deleteUserFromDifferentRefs(friendRequestsRef, from);
+            await deleteUserFromDifferentRefs(sentRequestsRef, userData.username);
+            await deleteUserFromDifferentRefs(friendRequestsRef, userData.username);
+        } catch (error) {
+            console.log('Error declining friend request: ', error)
+        }
+
     }
     return handleDecline;
 }

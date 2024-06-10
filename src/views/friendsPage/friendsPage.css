@@ -1,0 +1,17 @@
+.styled-scrollbar::-webkit-scrollbar {
+    width: 10px;
+}
+
+.styled-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px; /* Add this line to make the track rounded */
+}
+
+.styled-scrollbar::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px; /* Add this line to make the thumb rounded */
+}
+
+.styled-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

@@ -13,7 +13,7 @@ import { Header, NavBar } from './components'
 import styles from './App.module.css'
 import ExercisePage from './views/exercise/ExercisePage'
 import { FaHome, FaDumbbell, FaBullseye, FaTachometerAlt, FaUserFriends } from 'react-icons/fa';
-import FriendsPage from './views/FriendsPage'
+import FriendsPage from './views/friendsPage/FriendsPage'
 import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';

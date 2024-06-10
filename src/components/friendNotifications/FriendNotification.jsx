@@ -1,4 +1,4 @@
-import { useUser } from "../../context/UserContext";
+import { useUser } from "../../context/UserContext.jsx";
 import { db } from '../../../firebase/firebase-config.js';
 import { ref, update } from "firebase/database";
 import { deleteUserFromDifferentRefs } from "../../utils/utils.js";
