@@ -1,4 +1,4 @@
-import { ref, get, query, update } from "firebase/database";
+import { ref, get, query, update, remove } from "firebase/database";
 import { db } from '../../firebase/firebase-config';
 import { useEffect } from "react";
 import { useUser } from "../context/UserContext";
@@ -141,4 +141,25 @@ export const useHandleDecline = () => {
         await deleteUserFromDifferentRefs(friendRequestsRef, userData.username);
     }
     return handleDecline;
+}
+
+export const blockAccount = async (username) => {
+    return await update(ref(db, '/users/' + username), {
+        isBlocked: true
+    });
+}
+
+export const unblockAccount = async (username) => {
+    return await update(ref(db, '/users/' + username), {
+        isBlocked: false,
+    });
+}
+
+export const deleteAccount = async (username) => {
+    
+    try {
+        await remove(ref(db, '/users/' + username));
+    } catch (error) {
+        console.error("Error deleting user: ", error);
+    }
 }
