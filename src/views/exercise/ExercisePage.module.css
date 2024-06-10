@@ -1,3 +1,41 @@
+.container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-top: 65px;
+    text-align: center;
+}
+
+.container h1 {
+    font-size: 45px;
+    font-weight: bold;
+}
+
+.contentContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.dropdownContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.dropdownLabels {
+    display: flex;
+    justify-content: space-between;
+}
+
+.dropdowns {
+    display: flex;
+    justify-content: space-between;
+}
+
+.dropdowns div {
+    display: flex;
+    flex-basis: 25%;
+}
+
 .calendarContainer>div {
     background-color: rgb(126, 126, 126) !important;
     color: white;
@@ -38,5 +76,5 @@
 
 .circlesContainer {
     position: absolute;
-    top: -34px;
+    /* top: -34px; */
 }
