@@ -16,7 +16,7 @@ import styles from './ExercisePage.module.css';
 import { ActivityRings } from "@jonasdoesthings/react-activity-rings";
 
 const ExercisePage = () => {
-    const { calendarContainer, container, contentContainer, dropdownContainer, dropdownLabels, dropdowns } = styles;
+    const { calendarContainer, container, contentContainer, dropdownContainer, dropdownLabels, dropdown } = styles;
     const calendarRef = useRef(null);
     const { exercises, loading: exercisesLoading, error: exercisesError, fetchExercises, createExercise, updateExercise, deleteExercise, fetchExercisesByUserId } = useExercise();
     const { goals, loading: goalsLoading, error: goalsError, fetchGoalsByUserId } = useGoal();
@@ -42,23 +42,24 @@ const ExercisePage = () => {
             const currentDate = calendarRef.current.getCurrentDateTime();
             const selectedDateString = currentDate ? currentDate.toDateString() : null;
             const exercisesForDate = exercises.filter(ex => selectedDateString && new Date(ex.createdOn).toDateString() === selectedDateString);
+
             setExercisesForSelectedDate(exercisesForDate);
         }
     }, [exercises, selectedDate]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setForm(prevForm => ({ ...prevForm, [name]: value }));
+        const currentDate = calendarRef.current.getCurrentDateTime();
+
+        setForm(prevForm => ({ ...prevForm, [name]: value, createdOn: format(currentDate, 'yyyy-MM-dd HH:mm:ss') }));
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const currentDateTime = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
-        const exerciseData = { ...form, createdOn: currentDateTime };
 
         if (isEditing) {
-            updateExercise(currentExerciseId, exerciseData).then(() => {
-                fetchExercises();
+            updateExercise(currentExerciseId, form).then(() => {
+                fetchExercisesByUserId(user.uid);
                 resetForm();
                 setToastMessage('Exercise updated successfully');
                 setShowToast(true);
@@ -66,8 +67,8 @@ const ExercisePage = () => {
                 console.error("Failed to update exercise:", error);
             });
         } else {
-            createExercise(exerciseData).then(() => {
-                fetchExercises();
+            createExercise(form).then(() => {
+                fetchExercisesByUserId(user.uid);
                 resetForm();
                 setToastMessage('Exercise created successfully');
                 setShowToast(true);
@@ -97,7 +98,7 @@ const ExercisePage = () => {
 
     const confirmDelete = () => {
         deleteExercise(currentExerciseId).then(() => {
-            fetchExercises();
+            fetchExercisesByUserId(user.uid);
             setToastMessage('Exercise deleted successfully');
             setShowToast(true);
         }).catch(error => {
@@ -123,42 +124,44 @@ const ExercisePage = () => {
         { type: 'text', name: 'description', placeholder: 'Description', value: form.description, onChange: handleInputChange, required: true, className: 'w-full' },
         { type: 'text', name: 'duration', placeholder: 'Duration', value: form.duration, onChange: handleInputChange, required: true, className: 'w-full' },
         { type: 'text', name: 'calories', placeholder: 'Calories', value: form.calories, onChange: handleInputChange, required: true, className: 'w-full' },
+        { type: 'select', name: 'goalId', options: [], placeholder: 'Select a goal', value: form.goalId, onChange: handleInputChange, required: true, className: 'w-full' },
     ];
 
     const renderInputFields = (inputFieldsData) => {
         return inputFieldsData.map((inputField, index) => (
-            <div key={index}>
-                {inputField.type === 'select' ? (
-                    <Dropdown
-                        name={inputField.name}
-                        value={inputField.value}
-                        options={inputField.options.map(option => ({ label: option, value: option }))}
-                        onChange={(e) => handleInputChange({ target: { name: inputField.name, value: e.value } })}
-                        placeholder={inputField.placeholder}
-                        className={inputField.className}
-                    />
-                ) : (
-                    <InputText
-                        name={inputField.name}
-                        placeholder={inputField.placeholder}
-                        value={inputField.value}
-                        onChange={handleInputChange}
-                        required={inputField.required}
-                        className={inputField.className}
-                    />
-                )}
-            </div>
-        ));
-    };
+            <div key={index} className={dropdownLabels}>
+                <div>
+                    {inputField.placeholder}
+                </div>
+                <div>
+                    {inputField.type === 'select' ? (
+                        <Dropdown
+                            name={inputField.name}
+                            value={inputField.value}
+                            options={inputField.name === 'goalId' ? goals.map(goal => ({ label: `${goal.calories} cal, ${goal.duration} min (${goal.frequency})`, value: goal.id })) : inputField.options.map(option => ({ label: option, value: option }))}
+                            onChange={(e) => handleInputChange({ target: { name: inputField.name, value: e.value } })}
+                            placeholder={inputField.placeholder}
+                            className={`${inputField.className} ${dropdown}`}
+                        />
+                    ) : (
+                        <InputText
+                            name={inputField.name}
+                            placeholder={inputField.placeholder}
+                            value={inputField.value}
+                            onChange={handleInputChange}
+                            required={inputField.required}
+                            className={inputField.className}
+                        />
+                    )}
+                </div>
 
-    const renderInputLabels = (inputFieldsData) => {
-        return inputFieldsData.map((inputField, index) => (
-            <div key={index}>{inputField.placeholder}</div>
+            </div>
         ));
     };
 
     const onDateSelect = (e) => {
         const selected = e.value;
+
         setSelectedDate(selected);
     };
 
@@ -185,25 +188,11 @@ const ExercisePage = () => {
             <h1>Exercises</h1>
             <form onSubmit={handleSubmit} className="mb-4">
                 <div className={dropdownContainer}>
-                    <div className={dropdownLabels}>
-                        {renderInputLabels(inputFieldsData)}
-                    </div>
-
-                    <div className={dropdowns}>
-                        {renderInputFields(inputFieldsData)}
-                        <Dropdown
-                            name="goalId"
-                            value={form.goalId}
-                            options={goals.map(goal => ({ label: `${goal.calories} cal, ${goal.duration} min (${goal.frequency})`, value: goal.id }))}
-                            onChange={(e) => handleInputChange({ target: { name: 'goalId', value: e.value } })}
-                            placeholder="Select a goal"
-                            className="w-full"
-                        />
-                    </div>
+                    {renderInputFields(inputFieldsData)}
                 </div>
                 <div className="mt-4 flex space-x-2">
-                    <Button label={isEditing ? 'Update Exercise' : 'Create Exercise'} type="submit" className="p-button-primary" />
-                    {isEditing && <Button label="Cancel" type="button" onClick={resetForm} className="p-button-secondary" />}
+                    <button className="btn btn-neutral mr-2" >{isEditing ? 'Update Exercise' : 'Create Exercise'}</button>
+                    {isEditing && <button onClick={resetForm} className="btn btn-ghost">Cancel</button>}
                 </div>
             </form>
             <div className={contentContainer}>
@@ -216,7 +205,7 @@ const ExercisePage = () => {
                     className={calendarContainer}
                     style={{ width: '100%', opacity: 0.9 }}
                 />
-                <table className="table w-full mt-4">
+                <table className="table w-full mt-4 ">
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -283,7 +272,7 @@ const DateTemplate = ({ date, progress }) => {
                 <ActivityRings
                     rings={[
                         { filledPercentage: calories, color: '#fa0e5a' },
-                        { filledPercentage: duration, color: '#afff02' },
+                        { filledPercentage: duration, color: '#57ff5e' },
                     ]}
                     options={{
                         initialRadius: 50,
