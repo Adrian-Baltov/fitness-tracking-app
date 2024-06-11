@@ -1,21 +1,24 @@
 import { FaBell } from "react-icons/fa";
-import { useReducer, useState } from "react";
+import { useState } from "react";
 import { useEffect } from "react";
-import { useAuth } from "../../context/AuthContext";
 import { useUser } from "../../context/UserContext";
 import { onValue } from "firebase/database";
-import { useFetcher } from "react-router-dom";
 import { db } from '../../../firebase/firebase-config.js';
 import { ref } from "firebase/database";
 import FriendNotification from "../friendNotifications/FriendNotification.jsx";
+import Toast from "../toast/Toast.jsx";
+
+
 
 
 const Notifications = () => {
-    const { user, loading, error, register, login, logout } = useAuth();
     const { userData, loading: userLoading, error: userError } = useUser();
     const [expandNotifications, setExpandNotifications] = useState(false);
-    const [friendRequests, setFriendRequests] = useState([]);
     const [notifications, setNotifications] = useState([]);
+    const [notificationCount, setnotificationCount] = useState(0);
+    const [prevNotifications, setPrevNotifications] = useState([]);
+    const [showToast, setShowToast] = useState(false);
+    const [hasMounted, setHasMounted] = useState(false);
 
 
     /**
@@ -28,14 +31,23 @@ const Notifications = () => {
 
                 if (snapshot.exists()) {
                     const notificationsData = snapshot.val();
-
                     const notificationsList = Object.keys(notificationsData).map(key => ({ ...notificationsData[key] }));
+
+                    const newNotifications = notificationsList.some(newNotification => !prevNotifications.some(oldNotification => oldNotification.from === newNotification.from));
+                    if (newNotifications === true) {
+                        setShowToast(true);
+                    } else {
+                        setShowToast(false);
+                        setPrevNotifications(notificationsList);
+                    }
+                    setPrevNotifications(notificationsList)
+                    setnotificationCount(notificationsList.length);
                     setNotifications(notificationsList);
                 } else {
                     setNotifications([]);
+
+                    setnotificationCount(0);
                 }
-
-
             } catch (error) {
                 console.log('Error fetching notifications: ', error)
             }
@@ -47,17 +59,28 @@ const Notifications = () => {
          */
         onValue(notificationsRef, fetchNotifications)
 
-
-
     }, [userData])
+
+    useEffect(() => {
+        setHasMounted(true);
+    }, [])
+
+    const handleOnCloseToast = () => {
+        setShowToast(false);
+    }
+
 
 
 
     return (
         <div className="relative">
-            <button className='' onClick={() => setExpandNotifications(!expandNotifications)}>
+            <button className='mr-2' onClick={() => setExpandNotifications(!expandNotifications)}>
+                {notificationCount !== 0 && <span className='absolute top-0 right-0 -mt-2 -mr-0 bg-red-500 text-white rounded-full p-1 text-xs'>{notificationCount}</span>}
                 <FaBell />
             </button>
+
+            {showToast && <Toast toastPosition="toast-bottom" message='You have a new notification' onClose={handleOnCloseToast} ></Toast>}
+
 
             {expandNotifications && (
                 <section className='absolute top-0 right-0 mt-7 bg-white w-64 rounded-lg shadow-lg z-20 p-4'>
@@ -71,11 +94,12 @@ const Notifications = () => {
 
                         })}
 
-                        {notifications.length === 0 && <li className='p-4'>No notifications</li>}
+                        {notifications.length === 0 && <p className='p-4 '>No notifications</p>}
                     </ul>
 
+
                 </section>
-                
+
             )}
 
         </div>

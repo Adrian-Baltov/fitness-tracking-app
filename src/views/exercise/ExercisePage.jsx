@@ -12,7 +12,7 @@ import { format } from 'date-fns';
 import ConfirmationModal from '../../components/confirmationModal/ConfirmationModal';
 import Nessie from '../../components/nessie/Nessie';
 import styles from './ExercisePage.module.css';
-import Streak from '../../components/streak/Streak';
+// import Streak from '../../components/streak/Streak';
 import { ActivityRings } from "@jonasdoesthings/react-activity-rings";
 
 const ExercisePage = () => {
