@@ -8,6 +8,7 @@ const NavBar = ({ items, logout }) => {
 
     return (
         <div
+            style={{ paddingTop: '100px', backgroundColor: '#575757', borderRight: '1px solid white' }}
             className={`flex flex-col items-center bg-base-200 h-full transition-all overflow-x-hidden duration-300 ${isExpanded ? 'w-48' : 'w-16'
                 }`}
             onMouseEnter={() => setIsExpanded(true)}
