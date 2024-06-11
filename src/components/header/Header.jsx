@@ -2,11 +2,11 @@ import { useState, useEffect, useRef } from 'react'
 import { useAuth, useUser } from '../../context'
 import styles from './Header.module.css'
 import { NavLink } from 'react-router-dom'
-import {FaBell} from 'react-icons/fa'
+import { FaBell } from 'react-icons/fa'
 import Notifications from '../notifications/Notifications'
 
 const Header = () => {
-    const { container, dropdownContainer, username, dropdownMenu, usernamePicture, usernameContainer } = styles
+    const { container, dropdownContainer, username, dropdownMenu, usernamePicture, usernameContainer, logo } = styles
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef(null);
     const { user, logout } = useAuth();
@@ -40,13 +40,16 @@ const Header = () => {
     }, [user]);
 
     return (
-        <div className={`${container} bg-base-200`} >
-            <div>Logo</div>
+        <div className={`${container}`} >
+            <div className={logo}>
+                <img src='../../../assets/nessie.png' />
+                <div>FitNessie</div>
+            </div>
 
             {user ? (
 
                 <div className={dropdownContainer} ref={dropdownRef}>
-                    <Notifications/> 
+                    <Notifications />
                     <div className={usernameContainer} onClick={toggleDropdown}>
 
                         <img src={userData?.profilePicUrl} className={usernamePicture} />
