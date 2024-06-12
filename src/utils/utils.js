@@ -214,6 +214,13 @@ export const useHandleDecline = () => {
     return handleDecline;
 }
 
+export const removeFriend = async (username, friend) => {
+      const currentUserFriendsRef =  `users/${username}/friends`;
+        const friendFriendsRef =  `users/${friend}/friends`;    
+        await deleteUserFromDifferentRefs(currentUserFriendsRef, friend);
+        await deleteUserFromDifferentRefs(friendFriendsRef, username);
+}
+
 export const blockAccount = async (username) => {
     return await update(ref(db, '/users/' + username), {
         isBlocked: true

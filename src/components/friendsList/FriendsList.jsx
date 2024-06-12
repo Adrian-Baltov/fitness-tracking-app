@@ -1,9 +1,15 @@
+import { useUser } from "../../context/UserContext";
+import { onValue, remove } from "firebase/database";
 import { db } from '../../../firebase/firebase-config.js';
 import { ref } from "firebase/database";
 import { onValue } from "firebase/database";
 import { useState, useEffect } from "react";
 import { useUser } from "../../context/UserContext";
 import { searchFriends } from "../../utils/utils";
+import { removeFriend } from "../../utils/utils";
+
+
+
 
 const FriendsList = () => {
     const { userData, getUserByName } = useUser();
@@ -97,7 +103,7 @@ const FriendsList = () => {
         <div>
             { friendsData?.length > 0 ? friendsData?.map(friend => (
                 <div key={friend.username} className="flex items-center justify-between border-b border-gray-200 p-2">
-                    <div className="flex items-center">
+                    <div className="flex items-center mr-3">
                         <img src={`${friend.profilePicUrl}`} alt="profile" className="w-10 h-10 rounded-full" />
                         <p className="ml-2">{friend.username}</p>
                     </div>
@@ -113,7 +119,7 @@ const FriendsList = () => {
                         </div>
                         
                     </div> : null}
-                    <button className="bg-blue-500 text-white px-2 py-1 rounded-lg m-4">Remove friend</button>
+                    <button className="bg-blue-500 text-white px-2 py-1 rounded-lg m-4" onClick={() => removeFriend(userData.username, friend.username)}>Remove friend</button>
                 </div>
             )) : <p className="mt-20">No friends yet</p>}
            
