@@ -31,7 +31,7 @@ const UserList = ({ users }) => {
      * @returns 
      */
     const isCurrentUser = (user, currentUser) => {
-        if (user.uid === currentUser.uid) {
+        if (user?.uid === currentUser?.uid) {
             return true;
         }
         return false;
@@ -41,6 +41,23 @@ const UserList = ({ users }) => {
         await deleteAccount(username);
     }
 
+    const renderAdminButtons = (user) => {
+        if (currentUser.role === 'admin' && user.username !== currentUser.username) {
+            return (
+                <>
+                    <th>
+                        <button className="btn btn-ghost btn-xs" onClick={() => handleDeleteUser(user?.username)}>delete</button>
+                    </th>
+                    <th>
+                        {user.isBlocked ? 
+                            <button className="btn btn-ghost btn-xs" onClick={() => unblockAccount(user?.username)}>unblock</button> :
+                            <button className="btn btn-ghost btn-xs" onClick={() => blockAccount(user?.username)}>block</button>}
+                    </th>
+                </>
+            );
+        }
+        return null;
+    };
 
     /** 
      * Handle the add friend button click
@@ -217,16 +234,7 @@ const UserList = ({ users }) => {
                             <th>
 
                             </th>
-                            {currentUser.role === 'admin' && user.username !== currentUser.username &&
-                                <th>
-                                    <button className="btn btn-ghost btn-xs" onClick={() => handleDeleteUser(user?.username)}>delete</button>
-                                </th>}
-                            {currentUser.role === 'admin' && user.username !== currentUser.username &&
-                                <th>
-                                    {user.isBlocked ? <button className="btn btn-ghost btn-xs" onClick={() => unblockAccount(user?.username)}>unblock</button> :
-                                        <button className="btn btn-ghost btn-xs" onClick={() => blockAccount(user?.username)}>block</button>}
-                                </th>
-                            }
+                            {renderAdminButtons(user)}
                         </tr>
 
                     })}
