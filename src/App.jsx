@@ -20,15 +20,15 @@ import 'primeicons/primeicons.css';
 import 'primeflex/primeflex.css';
 import GoalsPage from './views/goals/GoalsPage'
 import NotFound from './views/NotFound'
+import Dashboard from './components/dashboard/Dashboard'
 
 function App() {
 
   const navData = [
-    { title: 'Home', route: '/', icon: <FaHome /> },
     { title: 'Dashboard', route: '/dashboard', icon: <FaTachometerAlt /> },
     { title: 'Exercises', route: '/exercises', icon: <FaDumbbell /> },
     { title: 'Goals', route: '/goals', icon: <FaBullseye /> },
-    { title: 'Search Users', route: '/search/friends', icon: <FaUserFriends  />}
+    { title: 'Search Users', route: '/search/friends', icon: <FaUserFriends /> }
   ];
 
   const { appContainer, container, navBarContainer, content } = styles
@@ -45,16 +45,16 @@ function App() {
           <div className={content}></div>
 
           <Routes>
-            <Route path='/' element={<div>Home<div className="card-actions justify-end">
+            {/* <Route path='/dashbaord' element={<div>Home<div className="card-actions justify-end">
               {!user ? <button onClick={() => navigate('/auth')}>Go to Auth</button> : <><p>Welcome: {userData?.username}</p><button onClick={() => navigate('/user-profile')}>Go to User Profile</button><button onClick={logout}>Logout</button></>}
-            </div></div>} />
+            </div></div>} /> */}
+            <Route path='/' element={<Dashboard />} />
             <Route path='/user-profile' element={<Authenticated><UserProfile /></Authenticated>} />
             <Route path='/auth' element={<AuthPage />} />
-            <Route path='/dashboard' element={<div>Dashboard</div>} />
+            <Route path='/dashboard' element={<Dashboard />} />
             <Route path='/exercises' element={<Authenticated><ExercisePage /></Authenticated>} />
             <Route path='/search/friends' element={<Authenticated><FriendsPage /></Authenticated>} />
             <Route path='/goals' element={<Authenticated><GoalsPage /></Authenticated>} />
-            <Route path='/' element={<div>Home</div>} />
             <Route path='*' element={<NotFound />} />
           </Routes>
         </div>
