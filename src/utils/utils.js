@@ -8,6 +8,7 @@ import { useState } from "react";
 
 
 
+
 export const fetchData = async (collectionName, setLoading, setData, setError) => {
     setLoading(true);
     setError(null);
@@ -35,20 +36,25 @@ export const fetchData = async (collectionName, setLoading, setData, setError) =
  */
 
 export const getAllUsersArray = async () => {
-    const usersRef = ref(db, 'users');
-    const usersSnapshot = await get(usersRef);
+    try {
+        const usersRef = ref(db, 'users');
+        const usersSnapshot = await get(usersRef);
 
-    if (usersSnapshot.exists()) {
+        if (usersSnapshot.exists()) {
 
 
-        const usersArray = Object.entries(usersSnapshot.val()).map(([key, value]) => ({
+            const usersArray = Object.entries(usersSnapshot.val()).map(([key, value]) => ({
 
-            ...value
-        }));
-        return usersArray;
-    } else {
-        return [];
+                ...value
+            }));
+            return usersArray;
+        } else {
+            return [];
+        }
+    } catch (error) {
+        console.log('Error getting all users: ', error);
     }
+
 
 };
 
@@ -66,15 +72,43 @@ export const searchAllUsers = async (search = '') => {
                 const filteredUsers = usersArray.filter(user => user.username && user.username.toLowerCase().includes(search.toLowerCase()));
                 return filteredUsers;
             } else {
-                return [];
+                return usersArray;
             }
 
+        } else {
+            return [];
         }
 
     } catch (error) {
         console.log('Errro searching users: ', error);
     }
 };
+
+
+/**
+ * Function to search friends
+ * 
+ * @param {string} search 
+ * @param {Array} friends 
+ * @returns {Promise} - array of friends that match the search query
+ */
+export const searchFriends = async (search = '', friends) => {
+    try {
+        if (friends) {
+            if (search) {
+                const filteredFriends = friends.filter(friend => friend.toLowerCase().includes(search.toLowerCase()));
+
+                return filteredFriends;
+            } else {
+                return friends;
+            }
+        } else {
+            return [];
+        }
+    } catch (error) {
+        console.log('Error searching friends: ', error);
+    }
+}
 
 /**
  *  Function to delete user from different references
@@ -94,7 +128,6 @@ export const deleteUserFromDifferentRefs = async (refPATH, username) => {
 };
 
 
-
 /**
  * Custom hook to handle sending friend requests
  * 
@@ -102,7 +135,6 @@ export const deleteUserFromDifferentRefs = async (refPATH, username) => {
  * @param {Object} user 
  * @returns  {boolean} - true if the user is already a friend, false if not
  */
-
 export const checkIfFriends = (currUserFriendsObj, user) => {
 
     if (currUserFriendsObj && currUserFriendsObj.hasOwnProperty(user.username)) {
@@ -110,8 +142,6 @@ export const checkIfFriends = (currUserFriendsObj, user) => {
     } else {
         return false;
     }
-
-
 
 }
 /**
@@ -122,7 +152,7 @@ export const checkIfFriends = (currUserFriendsObj, user) => {
 export const useHandleAccept = () => {
 
     const { userData, getUserByName, updateUser } = useUser();
-    const handleAccept = async (from, setFromUserData, fromUserData) => {
+    const handleAccept = async (from) => {
         try {
             const notificationsRef = `users/${userData?.username}/notifications`;
             const friendRequestsRef = `users/${userData?.username}/friendRequests`;
@@ -130,15 +160,15 @@ export const useHandleAccept = () => {
             await deleteUserFromDifferentRefs(notificationsRef, from);
             await deleteUserFromDifferentRefs(friendRequestsRef, from);
             await deleteUserFromDifferentRefs(sentRequestsRef, userData.username);
-            await deleteUserFromDifferentRefs(friendRequestsRef, userData.username);
 
 
             const currUserUsername = userData.username;
-            getUserByName(from)
+            const snapshot = await getUserByName(from)
                 .then((snapshot) => {
                     if (snapshot.exists()) {
                         const data = snapshot.val();
-                        setFromUserData(data);
+
+                        return data;
                     }
 
                 })
@@ -147,8 +177,10 @@ export const useHandleAccept = () => {
                 });
 
 
-            const fromUserFriends = fromUserData?.friends ? { ...fromUserData.friends, [currUserUsername]: true } : { [currUserUsername]: true };
+            const fromUserFriends = snapshot.friends ? { ...snapshot.friends, [currUserUsername]: true } : { [currUserUsername]: true };
             const currentUserFriends = userData?.friends ? { ...userData.friends, [from]: true } : { [from]: true };
+
+
             updateUser(currUserUsername, { friends: currentUserFriends });
             updateUser(from, { friends: fromUserFriends });
         } catch (error) {
@@ -199,7 +231,7 @@ export const unblockAccount = async (username) => {
 }
 
 export const deleteAccount = async (username) => {
-    
+
     try {
         await remove(ref(db, '/users/' + username));
     } catch (error) {

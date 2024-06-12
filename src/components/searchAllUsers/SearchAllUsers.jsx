@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { getAllUsersArray } from '../../utils/utils.js';
-import { onValue } from 'firebase/database';
 import UserList from '../friends/UserList.jsx';
 import { searchAllUsers } from '../../utils/utils.js';
-import { useUser } from '../../context/UserContext.jsx';
-
 
 const SearchAllUsers = () => {
   const [search, setSearch] = useState('');
@@ -23,7 +19,7 @@ const SearchAllUsers = () => {
 
   const handleChange = (e) => {
     setSearch(e.target.value);
-    searchAllUsers(e.target.value);
+
   };
 
 

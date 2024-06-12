@@ -6,10 +6,8 @@ import { db } from '../../../firebase/firebase-config';
 import { ref } from 'firebase/database';
 import { useHandleAccept, useHandleDecline } from '../../utils/utils.js';
 import { onValue } from 'firebase/database';
-import { useRouteError } from 'react-router-dom';
 import PeopleIcon from '@mui/icons-material/People';
 import EmailIcon from '@mui/icons-material/Email';
-import { deleteUser } from 'firebase/auth';
 
 
 const UserList = ({ users }) => {
@@ -134,8 +132,7 @@ const UserList = ({ users }) => {
 
 
     /**
-     *   Handle the accept button click
-     *  
+     *   Handle the accept button click 
      * @param {string} user 
      * @param {Object} setFromUserData 
      * @param {Object} fromUserData 
@@ -171,7 +168,6 @@ const UserList = ({ users }) => {
                         let details;
 
                         if (expandDetailsUserUid === user.uid && expandDetails) {
-                            console.log(expandDetailsUserUid)
                             details = <div className=" absolute right-0 p-4 z-[10]   rounded-md  bg-black">
                                 <h2>Details</h2>
                                 <p><PeopleIcon /> Friends: {Object.values(user.friends || {}).length}</p>
@@ -190,20 +186,19 @@ const UserList = ({ users }) => {
 
 
                         } else if (checkIfFriends(friends, user)) {
-                            content = <span>Friends</span>
+                            content = <span className="ml-6">Friends</span>
 
                         }
 
                         else if (friendRequests.hasOwnProperty(user.username)) {
-                            content = <span> <button class="btn btn-primary" onClick={() => onAccept(user.username, setFromUserData, fromUserData)}>Accept</button>
-                                <button class="btn btn-secondary" onClick={() => onDecline(user.username)}>Decline</button> </span>
+                            content = <span> <button class="btn btn-primary mr-2" onClick={() => onAccept(user.username, setFromUserData, fromUserData)}>Accept</button>
+                                <button class="btn btn-secondary " onClick={() => onDecline(user.username)}>Decline</button> </span>
                         }
 
                         else {
                             content = (
                                 <label >
-                                    <button className="" onClick={() => handleAddFriend(user)} >Add friend</button>
-
+                                    <button className="ml-5" onClick={() => handleAddFriend(user)} >Add friend</button>
                                 </label>
                             );
                         }
@@ -235,13 +230,13 @@ const UserList = ({ users }) => {
 
                             </th>
                             {currentUser.role === 'admin' && user.username !== currentUser.username &&
-                            <th>
-                                <button className="btn btn-ghost btn-xs" onClick={() => handleDeleteUser(user?.username)}>delete</button>
-                                 </th>}
+                                <th>
+                                    <button className="btn btn-ghost btn-xs" onClick={() => handleDeleteUser(user?.username)}>delete</button>
+                                </th>}
                             {currentUser.role === 'admin' && user.username !== currentUser.username &&
                                 <th>
-                                    {user.isBlocked ? <button className="btn btn-ghost btn-xs" onClick={ () => unblockAccount(user?.username)}>unblock</button> :
-                            <button className="btn btn-ghost btn-xs" onClick={ () => blockAccount(user?.username)}>block</button> }
+                                    {user.isBlocked ? <button className="btn btn-ghost btn-xs" onClick={() => unblockAccount(user?.username)}>unblock</button> :
+                                        <button className="btn btn-ghost btn-xs" onClick={() => blockAccount(user?.username)}>block</button>}
                                 </th>
                             }
                         </tr>

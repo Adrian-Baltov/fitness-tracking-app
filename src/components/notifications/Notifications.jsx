@@ -82,7 +82,7 @@ const Notifications = () => {
 
 
             {expandNotifications && (
-                <section className='fixed top-0 right-20 mt-7 bg-gray-700 w-64 rounded-lg shadow-lg z-10 p-4'>
+                <section className='fixed  right-20 mt-4 bg-gray-700 w-64 rounded-lg shadow-lg  p-4 '>
                     <h2 className="font-bold text-lg mb-4">Notifications</h2>
 
                     <ul  className="p-2 bg-base-100 rounded-box">
