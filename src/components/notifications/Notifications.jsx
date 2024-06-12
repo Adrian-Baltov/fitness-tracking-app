@@ -78,7 +78,7 @@ const Notifications = () => {
                 <FaBell />
             </button>
 
-            {showToast && <Toast toastPosition="toast-bottom" message='You have a new notification' onClose={handleOnCloseToast} ></Toast>}
+            {showToast && <Toast toastPosition="toast-top" message='You have a new notification' onClose={handleOnCloseToast} ></Toast>}
 
 
             {expandNotifications && (

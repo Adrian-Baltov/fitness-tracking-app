@@ -52,21 +52,37 @@ export function ExerciseProvider({ children }) {
     }, []);
 
     // Function to create a new exercise
-    const createExercise = (data) => {
-        const exerciseRef = ref(db, 'exercises');
-        const userId = user ? user.uid : null;
-        const exerciseDataWithUserId = { ...data, userId };
-        return push(exerciseRef, exerciseDataWithUserId);
+    const createExercise = async (data) => {
+        try {
+            const exerciseRef = ref(db, 'exercises');
+            const userId = user ? user.uid : null;
+            const exerciseDataWithUserId = { ...data, userId };
+            await push(exerciseRef, exerciseDataWithUserId);
+            console.log('Exercise created successfully');
+        } catch (error) {
+            console.error('Failed to create exercise:', error);
+        }
     };
 
+
     // Function to update existing exercise data
-    const updateExercise = useCallback((exerciseId, data) => {
-        return update(ref(db, `exercises/${exerciseId}`), data);
+    const updateExercise = useCallback(async (exerciseId, data) => {
+        try {
+            await update(ref(db, `exercises/${exerciseId}`), data);
+            console.log('Exercise updated successfully');
+        } catch (error) {
+            console.error('Failed to update exercise:', error);
+        }
     }, []);
 
     // Function to delete an exercise
-    const deleteExercise = useCallback((exerciseId) => {
-        return remove(ref(db, `exercises/${exerciseId}`));
+    const deleteExercise = useCallback(async (exerciseId) => {
+        try {
+            await remove(ref(db, `exercises/${exerciseId}`));
+            console.log('Exercise deleted successfully');
+        } catch (error) {
+            console.error('Failed to delete exercise:', error);
+        }
     }, []);
 
     // Context value containing state and functions

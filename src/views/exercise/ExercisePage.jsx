@@ -12,11 +12,10 @@ import { format } from 'date-fns';
 import ConfirmationModal from '../../components/confirmationModal/ConfirmationModal';
 import Nessie from '../../components/nessie/Nessie';
 import styles from './ExercisePage.module.css';
-// import Streak from '../../components/streak/Streak';
 import { ActivityRings } from "@jonasdoesthings/react-activity-rings";
 
 const ExercisePage = () => {
-    const { calendarContainer, container, contentContainer, dropdownContainer, dropdownLabels, dropdown } = styles;
+    const { calendarContainer, container, contentContainer, dropdownContainer, dropdownLabels, dropdown, table } = styles;
     const calendarRef = useRef(null);
     const { exercises, loading: exercisesLoading, error: exercisesError, fetchExercises, createExercise, updateExercise, deleteExercise, fetchExercisesByUserId } = useExercise();
     const { goals, loading: goalsLoading, error: goalsError, fetchGoalsByUserId } = useGoal();
@@ -205,49 +204,52 @@ const ExercisePage = () => {
                     className={calendarContainer}
                     style={{ width: '100%', opacity: 0.9 }}
                 />
-                <table className="table w-full mt-4 ">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Description</th>
-                            <th>Duration (min)</th>
-                            <th>Calories</th>
-                            <th>Date</th>
-                            <th>Goal End Date</th>
-                            <th>Frequency</th>
-                            <th>Goal Calories</th>
-                            <th>Goal Duration</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {exercisesForSelectedDate.map(exercise => {
-                            const goal = goals.find(goal => goal.id === exercise.goalId);
-                            return (
-                                <tr key={exercise.id}>
-                                    <td>{exercise.title}</td>
-                                    <td>{exercise.description}</td>
-                                    <td>{exercise.duration} minutes</td>
-                                    <td>{exercise.calories}</td>
-                                    <td>{new Date(exercise.createdOn).toLocaleDateString()}</td>
-                                    <td>{goal ? new Date(goal.endDate).toLocaleDateString() : 'N/A'}</td>
-                                    <td>{goal ? goal.frequency : 'N/A'}</td>
-                                    <td>{goal ? goal.calories : 'N/A'}</td>
-                                    <td>{goal ? goal.duration : 'N/A'}</td>
-                                    <td>
-                                        <button onClick={() => handleEdit(exercise)} className="btn btn-sm btn-warning mr-2">Edit</button>
-                                        <button onClick={() => handleDelete(exercise.id)} className="btn btn-sm btn-error">Delete</button>
-                                    </td>
-                                </tr>
-                            );
-                        })}
-                        {exercisesForSelectedDate.length === 0 && (
+                <div className={table}>
+                    <table className="table w-full mt-4 ">
+                        <thead>
                             <tr>
-                                <td colSpan="10">No exercises found for this date.</td>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Duration (min)</th>
+                                <th>Calories</th>
+                                <th>Date</th>
+                                <th>Goal End Date</th>
+                                <th>Frequency</th>
+                                <th>Goal Calories</th>
+                                <th>Goal Duration</th>
+                                <th>Actions</th>
                             </tr>
-                        )}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {exercisesForSelectedDate.map(exercise => {
+                                const goal = goals.find(goal => goal.id === exercise.goalId);
+                                return (
+                                    <tr key={exercise.id}>
+                                        <td>{exercise.title}</td>
+                                        <td>{exercise.description}</td>
+                                        <td>{exercise.duration} minutes</td>
+                                        <td>{exercise.calories}</td>
+                                        <td>{new Date(exercise.createdOn).toLocaleDateString()}</td>
+                                        <td>{goal ? new Date(goal.endDate).toLocaleDateString() : 'N/A'}</td>
+                                        <td>{goal ? goal.frequency : 'N/A'}</td>
+                                        <td>{goal ? goal.calories : 'N/A'}</td>
+                                        <td>{goal ? goal.duration : 'N/A'}</td>
+                                        <td>
+                                            <button onClick={() => handleEdit(exercise)} className="btn btn-sm btn-warning mr-2">Edit</button>
+                                            <button onClick={() => handleDelete(exercise.id)} className="btn btn-sm btn-error">Delete</button>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                            {exercisesForSelectedDate.length === 0 && (
+                                <tr>
+                                    <td colSpan="10">No exercises found for this date.</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+
                 {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
                 <ConfirmationModal
                     isOpen={showModal}

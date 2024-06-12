@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react'
 import { useAuth, useUser } from '../../context'
 import styles from './Header.module.css'
 import { NavLink } from 'react-router-dom'
-import { FaBell } from 'react-icons/fa'
 import Notifications from '../notifications/Notifications'
 
 const Header = () => {

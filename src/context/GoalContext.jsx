@@ -64,13 +64,23 @@ export function GoalProvider({ children }) {
 
 
     // Function to update existing goal data
-    const updateGoal = (goalId, data) => {
-        return update(ref(db, `goals/${goalId}`), data);
+    const updateGoal = async (goalId, data) => {
+        try {
+            await update(ref(db, `goals/${goalId}`), data);
+            console.log('Goal updated successfully');
+        } catch (error) {
+            console.error('Failed to update goal:', error);
+        }
     };
 
     // Function to delete a goal
-    const deleteGoal = (goalId) => {
-        return remove(ref(db, `goals/${goalId}`));
+    const deleteGoal = async (goalId) => {
+        try {
+            await remove(ref(db, `goals/${goalId}`));
+            console.log('Goal deleted successfully');
+        } catch (error) {
+            console.error('Failed to delete goal:', error);
+        }
     };
 
     // Context value containing state and functions
