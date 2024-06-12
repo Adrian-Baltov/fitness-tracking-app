@@ -2,7 +2,6 @@ import React from 'react';
 import { Dialog } from 'primereact/dialog';
 
 const ConfirmationModal = ({ isOpen = false, onClose, onConfirm }) => {
-    // if (!isOpen) return null;
 
     return (
         <Dialog visible={isOpen} onHide={onClose}>
