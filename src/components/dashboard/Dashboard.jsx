@@ -128,7 +128,7 @@ const Dashboard = () => {
                         </div>
                     </Paper>
                 </Grid>
-                {/* Total Calories Burned */}
+
                 <Grid item xs={12} sm={4}>
                     <Paper className={box} style={{ padding: '16px', display: 'flex', alignItems: 'center' }}>
                         <FaBurn size={30} style={{ marginRight: '16px' }} />
@@ -138,7 +138,7 @@ const Dashboard = () => {
                         </div>
                     </Paper>
                 </Grid>
-                {/* Average Exercise Duration */}
+
                 <Grid item xs={12} sm={4}>
                     <Paper className={box} style={{ padding: '16px', display: 'flex', alignItems: 'center' }}>
                         <FaClock size={30} style={{ marginRight: '16px' }} />
@@ -148,7 +148,7 @@ const Dashboard = () => {
                         </div>
                     </Paper>
                 </Grid>
-                {/* Exercise Progress */}
+
                 <Grid item xs={12}>
                     <Paper className={box} style={{ padding: '16px' }}>
                         <Typography variant="h6" gutterBottom>Exercise Progress</Typography>
@@ -160,7 +160,7 @@ const Dashboard = () => {
                         )}
                     </Paper>
                 </Grid>
-                {/* Recent Exercises */}
+
                 <Grid item xs={12}>
                     <Paper className={box} style={{ padding: '16px' }}>
                         <Typography variant="h6">Recent Exercises</Typography>
