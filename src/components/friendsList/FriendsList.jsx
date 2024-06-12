@@ -108,7 +108,7 @@ const FriendsList = () => {
         <div>
             { friendsData?.length > 0 ? friendsData?.map(friend => (
                 <div key={friend.username} className="flex items-center justify-between border-b border-gray-200 p-2">
-                    <div className="flex items-center">
+                    <div className="flex items-center mr-3">
                         <img src={`${friend.profilePicUrl}`} alt="profile" className="w-10 h-10 rounded-full" />
                         <p className="ml-2">{friend.username}</p>
                     </div>
