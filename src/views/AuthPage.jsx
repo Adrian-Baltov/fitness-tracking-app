@@ -6,8 +6,9 @@ export default function AuthPage() {
     const [isLogin, setIsLogin] = useState(true);
 
     return (
+        <div className="container flex justify-center mt-64 mb-64">
         <div className="flex w-full justify-center items-center">
-            <div className=" p-6 bg-white justify-center rounded-md">
+            <div className=" p-6 glass justify-center w-1/3 rounded-md">
             {isLogin ? (
                 <>
                     <Login />
@@ -20,6 +21,7 @@ export default function AuthPage() {
                 </>
             )}
             </div>
+        </div>
         </div>
     );
 }

@@ -19,6 +19,7 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import 'primeflex/primeflex.css';
 import GoalsPage from './views/goals/GoalsPage'
+import NotFound from './views/NotFound'
 
 function App() {
 
@@ -50,10 +51,11 @@ function App() {
             <Route path='/user-profile' element={<Authenticated><UserProfile /></Authenticated>} />
             <Route path='/auth' element={<AuthPage />} />
             <Route path='/dashboard' element={<div>Dashboard</div>} />
-            <Route path='/exercises' element={<ExercisePage />} />
-            <Route path='/search/friends' element={<FriendsPage />} />
-            <Route path='/goals' element={<GoalsPage />} />
+            <Route path='/exercises' element={<Authenticated><ExercisePage /></Authenticated>} />
+            <Route path='/search/friends' element={<Authenticated><FriendsPage /></Authenticated>} />
+            <Route path='/goals' element={<Authenticated><GoalsPage /></Authenticated>} />
             <Route path='/' element={<div>Home</div>} />
+            <Route path='*' element={<NotFound />} />
           </Routes>
         </div>
       </div>
