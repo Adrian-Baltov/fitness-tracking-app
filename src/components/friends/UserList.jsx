@@ -181,8 +181,8 @@ const UserList = ({ users }) => {
                             content = <span>Friends</span>
 
                         } else if (friendRequests.hasOwnProperty(user.username)) {
-                            content = <span> <button class="btn btn-primary" onClick={() => onAccept(user.username, setFromUserData, fromUserData)}>Accept</button>
-                                <button class="btn btn-secondary" onClick={() => onDecline(user.username)}>Decline</button> </span>
+                            content = <span> <button class="btn btn-primary mr-2" onClick={() => onAccept(user.username, setFromUserData, fromUserData)}>Accept</button>
+                                <button class="btn btn-secondary ml-2" onClick={() => onDecline(user.username)}>Decline</button> </span>
                         } else {
                             content = (
                                 <label >
