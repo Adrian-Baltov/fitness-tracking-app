@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { AUTH_INPUT, AUTH_LABEL } from "../constants/constants";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -41,13 +42,13 @@ export default function Login() {
                 <div className="login-label text-3x1 block text-center font-semibold">Sign in your account</div>
                 <div className="login-border"></div>
                 <div className="login-input-container">
-                    <div className="login-inputs mt-3">
-                        <label className="input input-bordered flex items-center gap-3">Email
+                    <div className={AUTH_INPUT}>
+                        <label className={AUTH_LABEL}>Email
                             <input className="login-input" value={form.email} placeholder="Email" onChange={updateForm('email')} type="text" name="email" id="email" />
                         </label>
                     </div>
-                    <div className="login-inputs mt-3">
-                        <label className="input input-bordered flex items-center gap-3">Password
+                    <div className={AUTH_INPUT}>
+                        <label className={AUTH_LABEL}>Password
                             <input className="login-input" value={form.password} placeholder="Password" onChange={updateForm('password')} type="password" name="password" id="password" />
                         </label>
                     </div>
