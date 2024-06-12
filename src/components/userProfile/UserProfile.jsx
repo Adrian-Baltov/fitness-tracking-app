@@ -18,6 +18,7 @@ const UserProfile = () => {
     const [userGender, setUserGender] = useState('');
     const [userHeight, setUserHeight] = useState('');
     const [userWeight, setUserWeight] = useState('');
+    const [phoneNumber , setPhoneNumber] = useState('');
     const [isChanged, setIsChanged] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [profilePicUrl, setProfilePicUrl] = useState('');
@@ -62,6 +63,7 @@ const UserProfile = () => {
             setUserFirstName(userData.firstName);
             setUserLastName(userData.lastName);
             setProfilePicUrl(userData.profilePicUrl);
+            setPhoneNumber(userData.phone);
         }
 
         if (!authUser || !user.userData) {
@@ -115,6 +117,11 @@ const UserProfile = () => {
 
         user.updateUser(user.userData.username, { email: userEmail, username: userUsername, firstName: userFirstName, lastName: userLastName });
         setIsChanged(false);
+    }
+
+    const handleOnChangePhoneNumber = (e) => {
+        setIsChanged(true);
+        setPhoneNumber(e.target.value);
     }
 
 
@@ -180,8 +187,8 @@ const UserProfile = () => {
 
                         <form className="flex flex-col items-center justify-center space-y-4 ">
                             <div className="avatar border-2 border-gray-500 rounded-full">
-                                <div className="w-48 rounded-full bg-black">
-                                    <img src={`${profilePicUrl}`} alt='No file' className="object-cover w-full h-full rounded-full" />
+                                <div className="w-40 rounded-full bg-black">
+                                    <img src={`${profilePicUrl}`} alt='No file' className="object-cover w-full  rounded-full" />
                                 </div>
                             </div>
 
@@ -229,6 +236,12 @@ const UserProfile = () => {
                             <label className="input input-bordered flex items-center gap-2 w-full">
                                 <span className="label-text">Last Name</span>
                                 <input type="text" className="grow" placeholder="Last Name" value={userLastName} onChange={(e) => handleOnChangeUserLastName(e)} />
+
+                            </label>
+                            <div className="divider divider-neutral"> </div>
+                            <label className="input input-bordered flex items-center gap-2 w-full">
+                                <span className="label-text">Phone Number</span>
+                                <input type="text" className="grow" placeholder="Last Name" value={phoneNumber} onChange={(e) => handleOnChangePhoneNumber(e)} />
 
                             </label>
                             {isChanged && <button className="btn btn-primary bg-transparent border-transparent text-white" onClick={() => handleSave()} >Save</button>}

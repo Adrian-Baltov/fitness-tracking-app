@@ -189,13 +189,13 @@ const UserList = ({ users }) => {
                             </div>
                         }
                         if (isCurrentUser(user, currentUser)) {
-                            content = <span>Current User</span>
+                            content = <span className='ml-5'>Current User</span>
 
                         } else if (requestsPending[user.uid]) {
                             content = <div className="badge badge-accent w-full">Request pending</div>;
 
                         } else if (checkIfFriends(friends, user)) {
-                            content = <span>Friends</span>
+                            content = <span className='ml-6'>Friends</span>
 
                         } else if (friendRequests.hasOwnProperty(user.username)) {
                             content = <span> <button class="btn btn-primary mr-2" onClick={() => onAccept(user.username, setFromUserData, fromUserData)}>Accept</button>
@@ -203,7 +203,7 @@ const UserList = ({ users }) => {
                         } else {
                             content = (
                                 <label >
-                                    <button className="" onClick={() => handleAddFriend(user)} >Add friend</button>
+                                    <button className="ml-5" onClick={() => handleAddFriend(user)} >Add friend</button>
 
                                 </label>
                             );

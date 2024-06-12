@@ -74,7 +74,7 @@ const Notifications = () => {
             {showToast && <Toast toastPosition="toast-top" message='You have a new notification' onClose={handleOnCloseToast} ></Toast>}
 
             {expandNotifications && (
-                <section className='absolute top-0 right-0 mt-7 bg-white w-64 rounded-lg shadow-lg z-20 p-4'>
+                <section className='absolute right-0 mt-4 bg-gray-700 w-64 rounded-lg shadow-lg z-20 p-4'>
                     <h2 className="font-bold text-lg mb-4">Notifications</h2>
                     <ul tabIndex={0} className="dropdown-content z-[500] menu p-2 shadow bg-base-100 rounded-box w-52">
                         {notifications.map((notification) => {
