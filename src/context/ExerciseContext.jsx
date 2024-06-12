@@ -66,8 +66,13 @@ export function ExerciseProvider({ children }) {
 
 
     // Function to update existing exercise data
-    const updateExercise = useCallback((exerciseId, data) => {
-        return update(ref(db, `exercises/${exerciseId}`), data);
+    const updateExercise = useCallback(async (exerciseId, data) => {
+        try {
+            await update(ref(db, `exercises/${exerciseId}`), data);
+            console.log('Exercise updated successfully');
+        } catch (error) {
+            console.error('Failed to update exercise:', error);
+        }
     }, []);
 
     // Function to delete an exercise
