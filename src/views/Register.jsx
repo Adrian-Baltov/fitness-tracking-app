@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useUser } from "../context/UserContext.jsx";
+import { AUTH_LABEL, AUTH_INPUT } from "../constants/constants.js";
 
 export default function Register() {
   const { getUserByName, createUser, getUsers } = useUser();
@@ -126,49 +127,49 @@ export default function Register() {
       <div className="login-border"></div>
 
       <div className="login-input-container">
-        <div className="login-inputs mt-3">
-          <label className="input input-bordered flex items-center gap-2">
+        <div className={AUTH_INPUT}>
+          <label className={AUTH_LABEL}>
             Username
             <input className="login-input" value={form.username} onChange={updateForm('username')} type="text" name="username" id="username" placeholder="Type here..." />
           </label>
         </div>
-        <div className="login-inputs mt-3">
-          <label className="input input-bordered flex items-center gap-2">
+        <div className={AUTH_INPUT}>
+          <label className={AUTH_LABEL}>
             First Name
             <input className="login-input" value={form.firstName} onChange={updateForm('firstName')} type="text" name="firstName" id="firstName" placeholder="Type here..." />
           </label>
         </div>
-        <div className="login-inputs mt-3">
-          <label className="input input-bordered flex items-center gap-2">
+        <div className={AUTH_INPUT}>
+          <label className={AUTH_LABEL}>
             Last Name
             <input className="login-input" value={form.lastName} onChange={updateForm('lastName')} type="text" name="lastName" id="lastName" placeholder="Type here..." />
           </label>
         </div>
-        <div className="login-inputs mt-3">
-          <label className="input input-bordered flex items-center gap-2">
+        <div className={AUTH_INPUT}>
+          <label className={AUTH_LABEL}>
             Email
             <input className="login-input" value={form.email} onChange={updateForm('email')} type="text" name="email" id="email" placeholder="Type here..." />
           </label>
         </div>
-        <div className="login-inputs mt-3">
-          <label className="input input-bordered flex items-center gap-2">
+        <div className={AUTH_INPUT}>
+          <label className={AUTH_LABEL}>
             Password
             <input className="login-input" value={form.password} onChange={updateForm('password')} type="password" name="password" id="password" placeholder="Type here..." />
           </label>
         </div>
-        <div className="login-inputs mt-3">
-          <label className="input input-bordered flex items-center gap-3">Phone
+        <div className={AUTH_INPUT}>
+          <label className={AUTH_LABEL}>Phone
             <input className="login-input" value={form.phone} onChange={updateForm('phone')} type="text" name="phone" id="phone" placeholder="Type here..." />
           </label>
         </div>
-        <div className="login-inputs mt-3">
-          <label className="input input-bordered flex items-center gap-3">
+        <div className={AUTH_INPUT}>
+          <label className={AUTH_LABEL}>
             Weight <i>(in kg)</i>
             <input className="login-input" value={form.weight} onChange={updateForm('weight')} type="text" name="weight" id="weight" placeholder="Type here..." />
           </label>
         </div>
-        <div className="login-inputs mt-3">
-          <label className="input input-bordered flex items-center gap-3">Height <i>(in cm)</i>
+        <div className={AUTH_INPUT}>
+          <label className={AUTH_LABEL}>Height <i>(in cm)</i>
             <input className="login-input" value={form.height} onChange={updateForm('height')} type="text" name="height" id="height" placeholder="Type here..." />
           </label>
         </div>
