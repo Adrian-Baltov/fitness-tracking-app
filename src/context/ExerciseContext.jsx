@@ -76,8 +76,13 @@ export function ExerciseProvider({ children }) {
     }, []);
 
     // Function to delete an exercise
-    const deleteExercise = useCallback((exerciseId) => {
-        return remove(ref(db, `exercises/${exerciseId}`));
+    const deleteExercise = useCallback(async (exerciseId) => {
+        try {
+            await remove(ref(db, `exercises/${exerciseId}`));
+            console.log('Exercise deleted successfully');
+        } catch (error) {
+            console.error('Failed to delete exercise:', error);
+        }
     }, []);
 
     // Context value containing state and functions
