@@ -13,7 +13,7 @@ const SearchAllUsers = () => {
 
     };
     searchResults();
-  }, [search]);
+  }, [search, users]);
 
 
   const handleChange = (e) => {
