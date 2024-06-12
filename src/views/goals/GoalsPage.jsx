@@ -4,8 +4,10 @@ import { useAuth } from '../../context';
 import { format, addDays, addWeeks, addMonths } from 'date-fns';
 import Toast from '../../components/toast/Toast';
 import ConfirmationModal from '../../components/confirmationModal/ConfirmationModal';
+import styles from './GoalsPage.module.css';
 
 const GoalsPage = () => {
+    const { container } = styles;
     const { goals, loading, error, fetchGoals, createGoal, updateGoal, deleteGoal, fetchGoalsByUserId } = useGoal();
     const [form, setForm] = useState({ calories: '', duration: '', frequency: 'Daily' });
     const [isEditing, setIsEditing] = useState(false);
@@ -107,61 +109,73 @@ const GoalsPage = () => {
     if (error) return <p>Error: {error.message}</p>;
 
     return (
-        <div className="container mx-auto p-4">
-            <h2 className="text-2xl font-bold mb-4">Goals</h2>
-            <form onSubmit={handleSubmit} className="mb-4">
-                <div className="grid grid-cols-1 gap-4">
-                    <input
-                        type="number"
-                        name="calories"
-                        placeholder="Calories"
-                        value={form.calories}
-                        onChange={handleInputChange}
-                        required
-                        className="input input-bordered w-full"
-                    />
-                    <input
-                        type="number"
-                        name="duration"
-                        placeholder="Duration (minutes)"
-                        value={form.duration}
-                        onChange={handleInputChange}
-                        required
-                        className="input input-bordered w-full"
-                    />
-                    <select
-                        name="frequency"
-                        value={form.frequency}
-                        onChange={handleInputChange}
-                        className="select select-bordered w-full"
-                    >
-                        <option value="Daily">Select an option</option>
-                        <option value="Daily">Daily</option>
-                        <option value="Weekly">Weekly</option>
-                        <option value="Monthly">Monthly</option>
-                    </select>
+        <div className={container}>
+            <h1 className="text-3xl font-bold mb-6">Goals</h1>
+            <form onSubmit={handleSubmit} className="mb-6 p-6 shadow-md rounded-lg" style={{ background: 'rgba(104, 104, 104, 0.8)' }}>
+                <div className="grid grid-cols-1 gap-6">
+                    <div>
+                        <label style={{ color: 'white' }} className="block text-sm font-medium mb-1" htmlFor="calories">Calories</label>
+                        <input
+                            type="number"
+                            name="calories"
+                            id="calories"
+                            placeholder="Calories"
+                            value={form.calories}
+                            onChange={handleInputChange}
+                            required
+                            className="input input-bordered w-full"
+                        />
+                    </div>
+                    <div>
+                        <label style={{ color: 'white' }} className="block text-sm font-medium mb-1" htmlFor="duration">Duration (minutes)</label>
+                        <input
+                            type="number"
+                            name="duration"
+                            id="duration"
+                            placeholder="Duration (minutes)"
+                            value={form.duration}
+                            onChange={handleInputChange}
+                            required
+                            className="input input-bordered w-full"
+                        />
+                    </div>
+                    <div>
+                        <label style={{ color: 'white' }} className="block text-sm font-medium mb-1" htmlFor="frequency">Frequency</label>
+                        <select
+                            name="frequency"
+                            id="frequency"
+                            value={form.frequency}
+                            onChange={handleInputChange}
+                            className="select select-bordered w-full"
+                        >
+                            <option value="">Select an option</option>
+                            <option value="Daily">Daily</option>
+                            <option value="Weekly">Weekly</option>
+                            <option value="Monthly">Monthly</option>
+                        </select>
+                    </div>
                 </div>
-                <div className="mt-4 flex space-x-2">
+                <div className="mt-6 flex space-x-2">
                     <button type="submit" className="btn btn-primary">{isEditing ? 'Update Goal' : 'Create Goal'}</button>
                     {isEditing && <button type="button" onClick={resetForm} className="btn btn-secondary">Cancel</button>}
                 </div>
             </form>
             <table className="table w-full mt-4">
-                <thead>
+                <thead className="">
                     <tr>
-                        <th>Calories</th>
-                        <th>Duration</th>
-                        <th>Frequency</th>
-                        <th>Actions</th>
+                        <th className="px-4 py-2">Calories</th>
+                        <th className="px-4 py-2">Duration</th>
+                        <th className="px-4 py-2">Frequency</th>
+                        <th className="px-4 py-2">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {goals.map(goal => (
                         <tr key={goal.id}>
-                            <td>{goal.calories}</td>
-                            <td>{goal.duration}</td>
-                            <td>{goal.frequency}</td>
-                            <td>
+                            <td className="px-4 py-2">{goal.calories}</td>
+                            <td className="px-4 py-2">{goal.duration}</td>
+                            <td className="px-4 py-2">{goal.frequency}</td>
+                            <td className="px-4 py-2">
                                 <button onClick={() => handleEdit(goal)} className="btn btn-sm btn-warning mr-2">Edit</button>
                                 <button onClick={() => handleDelete(goal.id)} className="btn btn-sm btn-error">Delete</button>
                             </td>
