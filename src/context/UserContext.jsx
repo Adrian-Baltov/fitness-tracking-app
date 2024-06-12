@@ -63,19 +63,8 @@ export function UserProvider({ children }) {
     };
 
     // Function to get user by username
-    const getUserByName = async (username) => {
-        try {
-            const snapshot = await get(ref(db, `users/${username}`));
-            if (snapshot.exists()) {
-                return snapshot.val();
-            } else {
-                console.log('No data available');
-                return null;
-            }
-        } catch (error) {
-            console.error('Error getting user:', error);
-            throw error;
-        }
+    const getUserByName = (username) => {
+        return get(ref(db, `users/${username}`));
     };
 
     // Function to create a user 
