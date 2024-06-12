@@ -1,12 +1,9 @@
-import { useUser } from "../../context/UserContext";
-import { onValue } from "firebase/database";
 import { db } from '../../../firebase/firebase-config.js';
 import { ref } from "firebase/database";
+import { onValue } from "firebase/database";
 import { useState, useEffect } from "react";
+import { useUser } from "../../context/UserContext";
 import { searchFriends } from "../../utils/utils";
-
-
-
 
 const FriendsList = () => {
     const { userData, getUserByName } = useUser();
@@ -16,7 +13,6 @@ const FriendsList = () => {
     const [friendsData, setFriendsData] = useState(null);
     const [expandDetailsUsername, setExpandDetailsUsername] = useState('');
     const [expandDetails, setExpandDetails] = useState(false);
-
 
     useEffect(() => {
         if (userData) {
@@ -52,8 +48,6 @@ const FriendsList = () => {
         }
     }, [userData])
 
-   
-
     const handleChange = (e) => { 
        setSearch(e.target.value);
     }
@@ -85,9 +79,6 @@ const FriendsList = () => {
   
     }, [friends])
 
-
-
-
   useEffect(( ) => {
     const searchResults = async () => {
         const filteredFriends = await searchFriends(search, allFriends, getUserByName); 
@@ -96,7 +87,6 @@ const FriendsList = () => {
 
     searchResults();
   }, [search, allFriends])
-
 
  return (
     <div className="flex flex-col justify-center items-center">

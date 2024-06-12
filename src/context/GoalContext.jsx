@@ -1,17 +1,18 @@
-import React, { createContext, useCallback, useContext, useState } from 'react';
 import { db } from '../../firebase/firebase-config';
 import { ref, push, update, remove, get } from "firebase/database";
+import React, { createContext, useCallback, useContext, useState } from 'react';
 import { useAuth } from './AuthContext'
-import { format } from 'date-fns';
 import { fetchData } from '../utils/utils';
+import { format } from 'date-fns';
 
 const GoalContext = createContext();
 
 export function GoalProvider({ children }) {
+    const { user } = useAuth();
     const [goals, setGoals] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const { user } = useAuth();
+
 
     // Function to get goals data by UID
     const fetchGoals = useCallback(async () => {

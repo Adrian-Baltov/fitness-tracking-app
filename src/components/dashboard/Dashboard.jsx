@@ -3,16 +3,16 @@ import { useExercise, useGoal, useAuth } from '../../context';
 import { Container, Grid, Paper, Typography, Box } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { format } from 'date-fns';
-import Streak from '../../components/streak/Streak';
 import { FaDumbbell, FaBurn, FaClock, FaRunning } from 'react-icons/fa';
+import Streak from '../../components/streak/Streak';
 import styles from './Dashboard.module.css';
 import 'daisyui/dist/full.css';
 
 const Dashboard = () => {
-    const { container, box } = styles
+    const { user } = useAuth();
     const { exercises, fetchExercisesByUserId } = useExercise();
     const { goals, fetchGoalsByUserId } = useGoal();
-    const { user } = useAuth();
+    const { container, box } = styles;
     const [totalExercises, setTotalExercises] = useState(0);
     const [totalCalories, setTotalCalories] = useState(0);
     const [totalDuration, setTotalDuration] = useState(0);

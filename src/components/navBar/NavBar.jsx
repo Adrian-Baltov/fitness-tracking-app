@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink } from "react-router-dom";
-import PropTypes from "prop-types";
 import { FaSignOutAlt } from 'react-icons/fa';
+import PropTypes from "prop-types";
 
 const NavBar = ({ items, logout }) => {
     const [isExpanded, setIsExpanded] = useState(false);

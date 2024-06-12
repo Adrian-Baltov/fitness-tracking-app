@@ -1,10 +1,10 @@
+import { ref, uploadBytes, getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import { storage, storageRef } from "../../../firebase/firebase-config";
+import { get, set } from "firebase/database";
+import { deleteObject } from "firebase/storage";
 import { useEffect, useState } from "react";
 import { useUser } from "../../context/UserContext.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
-import { get, set } from "firebase/database";
-import { ref, uploadBytes, getDownloadURL, uploadBytesResumable } from "firebase/storage";
-import { deleteObject } from "firebase/storage";
-import { storage, storageRef } from "../../../firebase/firebase-config";
 
 const UserProfile = () => {
     const user = useUser();
@@ -21,7 +21,7 @@ const UserProfile = () => {
     const [isChanged, setIsChanged] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [profilePicUrl, setProfilePicUrl] = useState('');
-    const [profilePicUploadProggres, setProfilePicUploadProggres] = useState(0);
+    const [profilePicUploadProgress, setProfilePicUploadProgress] = useState(0);
     const [file, setFile] = useState(null);
     const [isUploading, setIsUploading] = useState(false);
 
@@ -127,7 +127,7 @@ const UserProfile = () => {
 
                 const storageRef = ref(storage, `profilePictures/${user.userData.username}/profilePicture`);
 
-                
+
                 try {
                     await deleteObject(storageRef)
                 } catch (error) {
@@ -137,7 +137,7 @@ const UserProfile = () => {
 
                 uploadTask.on('state_changed',
                     (snapshot) => {
-                        setProfilePicUploadProggres((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                        setProfilePicUploadProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
 
                     },
                     (error) => {
@@ -150,17 +150,13 @@ const UserProfile = () => {
                             user.updateUser(user.userData.username, { profilePicUrl: downloadURL });
                             setProfilePicUrl(downloadURL);
                             setIsUploading(false);
-                            setProfilePicUploadProggres(0);
+                            setProfilePicUploadProgress(0);
                         } catch (error) {
                             console.log("Error getting download URL:", error);
                         }
                     }
 
                 )
-
-       
-   
-                    
 
             } catch (error) {
                 console.error('Error uploading profile picture:', error);
@@ -172,14 +168,10 @@ const UserProfile = () => {
 
     }
 
-
     return (
         <div className="flex  justify-center w-screen" >
 
-
-
             <div className="flex w-3/6 h-5/6 justify-center items-center  h-screen" >
-
 
                 <div className="  glass relative flex justify-center items-center w-full h-5/6 rounded-xl">
 
@@ -193,8 +185,6 @@ const UserProfile = () => {
                                 </div>
                             </div>
 
-
-
                             <input type="file" className="file-input file-input-bordered w-full max-w-xs" onChange={((e) => {
                                 const file = e.target.files[0];
                                 setFile(file);
@@ -206,9 +196,9 @@ const UserProfile = () => {
                             }
                             )} />
                             {file && <span> <button type="submit" className="submit-button" onClick={(e) => handleUploadProfilePicture(e)}>Upload </button></span>}
-                            {profilePicUploadProggres && profilePicUploadProggres < 100 ? (
-                                <div className="radial-progress" style={{ "--value": profilePicUploadProggres }} role="progressbar">
-                                    {`${profilePicUploadProggres.toFixed(0)}%`}
+                            {profilePicUploadProgress && profilePicUploadProgress < 100 ? (
+                                <div className="radial-progress" style={{ "--value": profilePicUploadProgress }} role="progressbar">
+                                    {`${profilePicUploadProgress.toFixed(0)}%`}
                                 </div>
                             ) : null}
                             <h1>User Profile</h1>
@@ -244,17 +234,11 @@ const UserProfile = () => {
                             {isChanged && <button className="btn btn-primary bg-transparent border-transparent text-white" onClick={() => handleSave()} >Save</button>}
                         </form>
 
-
-
-
-
                         : <>{isLoading && <> <span className="loading loading-ring loading-xs"></span>
                             <span className="loading loading-ring loading-sm"></span>
                             <span className="loading loading-ring loading-md"></span>
                             <span className="loading loading-ring loading-lg"></span></>}</>}
                 </div>
-
-
 
             </div>
         </div>

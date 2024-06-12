@@ -1,15 +1,15 @@
 import { useState, useEffect, useRef } from 'react'
-import { useAuth, useUser } from '../../context'
-import styles from './Header.module.css'
 import { NavLink } from 'react-router-dom'
+import { useAuth, useUser } from '../../context'
 import Notifications from '../notifications/Notifications'
+import styles from './Header.module.css'
 
 const Header = () => {
-    const { container, dropdownContainer, username, dropdownMenu, usernamePicture, usernameContainer, logo } = styles
-    const [showDropdown, setShowDropdown] = useState(false);
-    const dropdownRef = useRef(null);
     const { user, logout } = useAuth();
     const { userData, loading } = useUser();
+    const dropdownRef = useRef(null);
+    const { container, dropdownContainer, username, dropdownMenu, usernamePicture, usernameContainer, logo } = styles
+    const [showDropdown, setShowDropdown] = useState(false);
 
     const handleLogout = () => {
         logout();
@@ -46,11 +46,9 @@ const Header = () => {
             </div>
 
             {user ? (
-
                 <div className={dropdownContainer} ref={dropdownRef}>
                     <Notifications />
                     <div className={usernameContainer} onClick={toggleDropdown}>
-
                         <img src={userData?.profilePicUrl} className={usernamePicture} />
                         <div className={username}>{userData && userData.username}</div>
                     </div>
@@ -65,7 +63,6 @@ const Header = () => {
             ) : (
                 <div className={dropdownContainer}>
                     <div className="nav-bar-item">
-
                         <NavLink to="/auth">Login</NavLink>
                     </div>
                 </div>

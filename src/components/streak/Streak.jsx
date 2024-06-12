@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { format, differenceInCalendarDays } from 'date-fns';
 import { useExercise } from '../../context';
+import { format, differenceInCalendarDays } from 'date-fns';
 
 const Streak = () => {
     const { exercises } = useExercise();

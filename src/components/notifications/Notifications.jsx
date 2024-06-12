@@ -1,15 +1,12 @@
-import { FaBell } from "react-icons/fa";
+import { db } from '../../../firebase/firebase-config.js';
+import { ref } from "firebase/database";
+import { onValue } from "firebase/database";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useUser } from "../../context/UserContext";
-import { onValue } from "firebase/database";
-import { db } from '../../../firebase/firebase-config.js';
-import { ref } from "firebase/database";
+import { FaBell } from "react-icons/fa";
 import FriendNotification from "../friendNotifications/FriendNotification.jsx";
 import Toast from "../toast/Toast.jsx";
-
-
-
 
 const Notifications = () => {
     const { userData, loading: userLoading, error: userError } = useUser();
@@ -19,7 +16,6 @@ const Notifications = () => {
     const [prevNotifications, setPrevNotifications] = useState([]);
     const [showToast, setShowToast] = useState(false);
     const [hasMounted, setHasMounted] = useState(false);
-
 
     /**
      * Fetch notifications from the database
@@ -34,7 +30,7 @@ const Notifications = () => {
                     const notificationsList = Object.keys(notificationsData).map(key => ({ ...notificationsData[key] }));
 
                     const newNotifications = notificationsList.some(newNotification => !prevNotifications.some(oldNotification => oldNotification.from === newNotification.from));
-                    if (newNotifications && hasMounted === true && prevNotifications.length <= notificationsList.length) {
+                    if (newNotifications === true) {
                         setShowToast(true);
                     } else {
                         setShowToast(false);
@@ -68,9 +64,6 @@ const Notifications = () => {
         setShowToast(false);
     }
 
-
-
-
     return (
         <div className="relative">
             <button className='mr-2' onClick={() => setExpandNotifications(!expandNotifications)}>
@@ -80,29 +73,20 @@ const Notifications = () => {
 
             {showToast && <Toast toastPosition="toast-top" message='You have a new notification' onClose={handleOnCloseToast} ></Toast>}
 
-
             {expandNotifications && (
-                <section className='fixed  right-20 mt-4 bg-gray-700 w-64 rounded-lg shadow-lg  p-4 '>
+                <section className='absolute top-0 right-0 mt-7 bg-white w-64 rounded-lg shadow-lg z-20 p-4'>
                     <h2 className="font-bold text-lg mb-4">Notifications</h2>
-
-                    <ul  className="p-2 bg-base-100 rounded-box">
+                    <ul tabIndex={0} className="dropdown-content z-[500] menu p-2 shadow bg-base-100 rounded-box w-52">
                         {notifications.map((notification) => {
                             if (notification.type === 'friendRequest') {
                                 return <FriendNotification notification={notification} key={notification.from} />
                             }
-
                         })}
-                        
                         {notifications.length === 0 && <p className='p-4 '>No notifications</p>}
                     </ul>
-
-
                 </section>
-
             )}
-
         </div>
-
     );
 }
 

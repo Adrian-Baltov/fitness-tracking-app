@@ -1,4 +1,3 @@
-import Authenticated from './hoc/Authenticated'
 import { Route, Routes } from 'react-router-dom'
 import {
   useExercise,
@@ -7,20 +6,21 @@ import {
   useAuth
 } from './context'
 import UserProfile from './components/userProfile/UserProfile'
-import { useNavigate } from 'react-router-dom'
+import GoalsPage from './views/goals/GoalsPage'
+import NotFound from './views/NotFound'
+import Dashboard from './components/dashboard/Dashboard'
 import AuthPage from './views/AuthPage'
-import { Header, NavBar } from './components'
-import styles from './App.module.css'
+import Authenticated from './hoc/Authenticated'
 import ExercisePage from './views/exercise/ExercisePage'
-import { FaHome, FaDumbbell, FaBullseye, FaTachometerAlt, FaUserFriends } from 'react-icons/fa';
 import FriendsPage from './views/friendsPage/FriendsPage'
+import { useNavigate } from 'react-router-dom'
+import { Header, NavBar } from './components'
+import { FaHome, FaDumbbell, FaBullseye, FaTachometerAlt, FaUserFriends } from 'react-icons/fa';
+import styles from './App.module.css'
 import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import 'primeflex/primeflex.css';
-import GoalsPage from './views/goals/GoalsPage'
-import NotFound from './views/NotFound'
-import Dashboard from './components/dashboard/Dashboard'
 
 function App() {
 
@@ -30,11 +30,11 @@ function App() {
     { title: 'Goals', route: '/goals', icon: <FaBullseye /> },
     { title: 'Search Users', route: '/search/friends', icon: <FaUserFriends /> }
   ];
-
-  const { appContainer, container, navBarContainer, content } = styles
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { userData } = useUser();
+  const { appContainer, container, navBarContainer, content } = styles
+
 
   return (
     <>

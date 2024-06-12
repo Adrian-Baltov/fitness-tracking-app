@@ -6,7 +6,6 @@ const SearchAllUsers = () => {
   const [search, setSearch] = useState('');
   const [users, setUsers] = useState([]);
 
-
   useEffect(() => {
     const searchResults = async () => {
       const filteredUsers = await searchAllUsers(search);
@@ -22,7 +21,6 @@ const SearchAllUsers = () => {
 
   };
 
-
   return (
 
     <div className='flex flex-col justify-center items-center'>
@@ -37,7 +35,6 @@ const SearchAllUsers = () => {
 
       <UserList users={users} />
     </div>
-
 
   );
 };

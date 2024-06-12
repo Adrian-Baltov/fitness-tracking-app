@@ -4,6 +4,10 @@ import { useAuth } from "../context/AuthContext.jsx";
 import { useUser } from "../context/UserContext.jsx";
 
 export default function Register() {
+  const { getUserByName, createUser, getUsers } = useUser();
+  const [error, setError] = useState(null);
+  const { user, register } = useAuth();
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     username: '',
     email: '',
@@ -14,11 +18,6 @@ export default function Register() {
     weight: '',
     height: '',
   });
-  
-  const [error, setError] = useState(null);
-  const { user, register } = useAuth();
-  const navigate = useNavigate();
-  const { getUserByName, createUser, getUsers} = useUser();
 
   useEffect(() => {
     if (user) {
@@ -34,7 +33,6 @@ export default function Register() {
   };
 
   const isValidEmail = (email) => {
-
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailPattern.test(email);
   };
@@ -43,7 +41,7 @@ export default function Register() {
     return name.length >= 4 && name.length <= 34;
   };
 
-  const isValidPhone = (phone) => { 
+  const isValidPhone = (phone) => {
     return phone.length === 10;
   }
 
@@ -52,13 +50,13 @@ export default function Register() {
   }
   const isPhoneNumberUnique = async (phone) => {
     let result = false;
-  const users = await getUsers();
-  users.forEach((user) => {
-    if (user[1].phone === phone) {
-      result = true;
-    }
-  });
-  return result;
+    const users = await getUsers();
+    users.forEach((user) => {
+      if (user[1].phone === phone) {
+        result = true;
+      }
+    });
+    return result;
   }
   const registerUser = async () => {
     setError(null);
@@ -109,7 +107,7 @@ export default function Register() {
         setError("User with this username already exists.");
         return;
       }
-      
+
       const credential = await register(form.email, form.password);
       await createUser(form.username, credential.user.uid, credential.user.email, form.firstName, form.lastName, form.phone, form.weight, form.height);
       navigate('/');
@@ -182,8 +180,8 @@ export default function Register() {
         </button>
       </div>
       {error && <div role="alert" className="alert alert-warning mt-3 mb-3">
-  <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-  <span>{error}</span>
-</div>}
+        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+        <span>{error}</span>
+      </div>}
     </div>)
 }

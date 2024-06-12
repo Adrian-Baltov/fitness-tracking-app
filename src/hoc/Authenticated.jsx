@@ -1,7 +1,6 @@
-import PropTypes from 'prop-types';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-
+import PropTypes from 'prop-types';
 export default function Authenticated({ children }) {
     const { user, loading } = useAuth();
     const location = useLocation();

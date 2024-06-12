@@ -1,23 +1,24 @@
 import React from 'react';
+import { db } from '../../../firebase/firebase-config';
+import { ref } from 'firebase/database';
+import { deleteUser } from 'firebase/auth';
+import { onValue } from 'firebase/database';
 import { useState, useEffect } from 'react';
 import { useUser } from '../../context/UserContext';
 import { blockAccount, checkIfFriends, deleteAccount, unblockAccount } from '../../utils/utils.js';
-import { db } from '../../../firebase/firebase-config';
-import { ref } from 'firebase/database';
 import { useHandleAccept, useHandleDecline } from '../../utils/utils.js';
-import { onValue } from 'firebase/database';
+import { useRouteError } from 'react-router-dom';
 import PeopleIcon from '@mui/icons-material/People';
 import EmailIcon from '@mui/icons-material/Email';
 
-
 const UserList = ({ users }) => {
     const userContext = useUser();
+    const handleAccept = useHandleAccept();
+    const handleDecline = useHandleDecline();
     const currentUser = userContext.userData;
     const [requestsPending, setRequestsPending] = useState(false);
     const [friends, setFriends] = useState({});
     const [friendRequests, setFriendRequests] = useState({});
-    const handleAccept = useHandleAccept();
-    const handleDecline = useHandleDecline();
     const [fromUserData, setFromUserData] = useState(null);
     const [expandDetailsUserUid, setExpandDetailsUserUid] = useState('');
     const [expandDetails, setExpandDetails] = useState(false);
@@ -65,7 +66,6 @@ const UserList = ({ users }) => {
             return { ...prevState, [userToAdd.uid]: true }; // for immeadiate UI update
         });
 
-
         const sentRequests = currentUser.sentRequests || {};
 
         const newRequest = {
@@ -76,7 +76,6 @@ const UserList = ({ users }) => {
 
         sentRequests[userToAdd.username] = newRequest;
         userContext.updateUser(currentUser.username, { sentRequests: sentRequests });
-
     }
 
 
@@ -95,7 +94,6 @@ const UserList = ({ users }) => {
             });
             return pendingRequests; // Return the updated state
         });
-
     }, [users]);
 
 
@@ -103,8 +101,8 @@ const UserList = ({ users }) => {
      * Update the sentRequests state when the currentUser changes
      */
     useEffect(() => {
-        const friendReuquestsRef = ref(db, `users/${currentUser?.username}/friendRequests`);
-        onValue(friendReuquestsRef, (snapshot) => {
+        const friendRequestsRef = ref(db, `users/${currentUser?.username}/friendRequests`);
+        onValue(friendRequestsRef, (snapshot) => {
             if (snapshot.exists()) {
                 const friendRequests = snapshot.val();
                 setFriendRequests(friendRequests);
@@ -132,7 +130,8 @@ const UserList = ({ users }) => {
 
 
     /**
-     *   Handle the accept button click 
+     *   Handle the accept button click
+     *  
      * @param {string} user 
      * @param {Object} setFromUserData 
      * @param {Object} fromUserData 
@@ -141,25 +140,20 @@ const UserList = ({ users }) => {
         handleAccept(user, setFromUserData, fromUserData);
     }
 
-
     const onDecline = (user) => {
         handleDecline(user);
     }
 
-
     const handleClickDetails = (user) => {
         setExpandDetails(!expandDetails);
         setExpandDetailsUserUid(user.uid);
-
     }
-
 
     return (
         <div className="overflow-x-none">
             <table className="table">
                 {/* head */}
                 <thead>
-
                 </thead>
                 <tbody>
 
@@ -168,6 +162,7 @@ const UserList = ({ users }) => {
                         let details;
 
                         if (expandDetailsUserUid === user.uid && expandDetails) {
+                            console.log(expandDetailsUserUid)
                             details = <div className=" absolute right-0 p-4 z-[10]   rounded-md  bg-black">
                                 <h2>Details</h2>
                                 <p><PeopleIcon /> Friends: {Object.values(user.friends || {}).length}</p>
@@ -177,32 +172,25 @@ const UserList = ({ users }) => {
                             </div>
                         }
                         if (isCurrentUser(user, currentUser)) {
-
                             content = <span>Current User</span>
 
                         } else if (requestsPending[user.uid]) {
-
                             content = <div className="badge badge-accent w-full">Request pending</div>;
 
-
                         } else if (checkIfFriends(friends, user)) {
-                            content = <span className="ml-6">Friends</span>
+                            content = <span>Friends</span>
 
-                        }
-
-                        else if (friendRequests.hasOwnProperty(user.username)) {
-                            content = <span> <button class="btn btn-primary mr-2" onClick={() => onAccept(user.username, setFromUserData, fromUserData)}>Accept</button>
-                                <button class="btn btn-secondary " onClick={() => onDecline(user.username)}>Decline</button> </span>
-                        }
-
-                        else {
+                        } else if (friendRequests.hasOwnProperty(user.username)) {
+                            content = <span> <button class="btn btn-primary" onClick={() => onAccept(user.username, setFromUserData, fromUserData)}>Accept</button>
+                                <button class="btn btn-secondary" onClick={() => onDecline(user.username)}>Decline</button> </span>
+                        } else {
                             content = (
                                 <label >
-                                    <button className="ml-5" onClick={() => handleAddFriend(user)} >Add friend</button>
+                                    <button className="" onClick={() => handleAddFriend(user)} >Add friend</button>
+
                                 </label>
                             );
                         }
-
 
                         return <tr key={user.uid}>
                             <th>
@@ -244,7 +232,6 @@ const UserList = ({ users }) => {
                     })}
                 </tbody>
                 {/* foot */}
-
 
             </table>
         </div>

@@ -11,7 +11,6 @@ const ConfirmationModal = ({ isOpen = false, onClose, onConfirm }) => {
                 <button onClick={onClose} className="btn btn-secondary">No</button>
             </div>
         </Dialog>
-
     );
 };
 

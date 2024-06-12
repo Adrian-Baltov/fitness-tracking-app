@@ -1,22 +1,20 @@
-import { useUser } from "../../context/UserContext.jsx";
 import { db } from '../../../firebase/firebase-config.js';
 import { ref, update } from "firebase/database";
+import { onValue } from "firebase/database";
 import { deleteUserFromDifferentRefs } from "../../utils/utils.js";
 import { useState } from "react";
+import { useEffect } from "react";
+import { useUser } from "../../context/UserContext.jsx";
+import { useFetcher } from "react-router-dom";
 import { useHandleAccept } from "../../utils/utils.js";
 import { useHandleDecline } from "../../utils/utils.js";
-import { onValue } from "firebase/database";
-import { useEffect } from "react";
-import { useFetcher } from "react-router-dom";
-
 
 const FriendNotification = ({ notification }) => {
-    const { from } = notification;
-    const [fromUserData, setFromUserData] = useState({});
     const handleAccept = useHandleAccept();
     const handleDecline = useHandleDecline();
-
-
+    const { from } = notification;
+    const [fromUserData, setFromUserData] = useState({});
+    
     const onAccept = (from) => {
         handleAccept(from);
     }

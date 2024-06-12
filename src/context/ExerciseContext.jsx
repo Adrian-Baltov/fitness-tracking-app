@@ -1,15 +1,15 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { db } from '../../firebase/firebase-config';
 import { ref, get, push, update, remove } from 'firebase/database';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from './AuthContext'
 
 const ExerciseContext = createContext();
 
 export function ExerciseProvider({ children }) {
+    const { user } = useAuth();
     const [exercises, setExercises] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const { user } = useAuth();
 
     // Function to fetch all exercises data 
     const fetchExercises = useCallback(async () => {

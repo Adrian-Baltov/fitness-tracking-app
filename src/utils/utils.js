@@ -1,12 +1,8 @@
 import { ref, get, query, update, remove } from "firebase/database";
 import { db } from '../../firebase/firebase-config';
+import { useState } from "react";
 import { useEffect } from "react";
 import { useUser } from "../context/UserContext";
-import { useState } from "react";
-
-
-
-
 
 
 export const fetchData = async (collectionName, setLoading, setData, setError) => {

@@ -16,7 +16,7 @@ const FriendsPage = () => {
             </div>
             <div className='border border-white  w-1/2 glass flex   h-96 rounded-lg ml-40 mr-20'>
                 <div className='m-5 flex-grow overflow-y-auto styled-scrollbar '>
-                  <FriendsList/>
+                    <FriendsList />
                 </div>
 
             </div>

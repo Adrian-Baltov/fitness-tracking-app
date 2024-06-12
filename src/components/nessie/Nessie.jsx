@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import styles from './Nessie.module.css';
 import { phrases } from '../../constants/constants';
+import styles from './Nessie.module.css';
 
 const Nessie = () => {
     const [show, setShow] = useState(false);

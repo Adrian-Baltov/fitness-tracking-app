@@ -1,7 +1,7 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../../firebase/firebase-config'
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { createContext, useContext, useEffect, useState } from "react";
 
 
 const AuthContext = createContext(null);
@@ -37,7 +37,6 @@ export const AuthProvder = ({ children }) => {
 
 export const useAuth = () => {
     return useContext(AuthContext);
-
 }
 
 // to use the context const { user, loading, error, register, login, logout } = useAuth();

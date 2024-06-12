@@ -1,28 +1,28 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useExercise, useGoal } from '../../context';
 import { useAuth } from '../../context';
+import Nessie from '../../components/nessie/Nessie';
 import { Calendar } from 'primereact/calendar';
 import { Dropdown } from 'primereact/dropdown';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import Toast from '../../components/toast/Toast';
 import { format } from 'date-fns';
-import ConfirmationModal from '../../components/confirmationModal/ConfirmationModal';
-import Nessie from '../../components/nessie/Nessie';
-import styles from './ExercisePage.module.css';
 import { ActivityRings } from "@jonasdoesthings/react-activity-rings";
+import ConfirmationModal from '../../components/confirmationModal/ConfirmationModal';
+import styles from './ExercisePage.module.css';
+import Toast from '../../components/toast/Toast';
 
 const ExercisePage = () => {
-    const { calendarContainer, container, contentContainer, dropdownContainer, dropdownLabels, dropdown, table } = styles;
-    const calendarRef = useRef(null);
+    const { user } = useAuth();
     const { exercises, loading: exercisesLoading, error: exercisesError, fetchExercises, createExercise, updateExercise, deleteExercise, fetchExercisesByUserId } = useExercise();
     const { goals, loading: goalsLoading, error: goalsError, fetchGoalsByUserId } = useGoal();
+    const calendarRef = useRef(null);
+    const { calendarContainer, container, contentContainer, dropdownContainer, dropdownLabels, dropdown, table } = styles;
     const [form, setForm] = useState({ title: '', description: '', duration: '', calories: '', createdOn: '', goalId: '' });
     const [isEditing, setIsEditing] = useState(false);
     const [currentExerciseId, setCurrentExerciseId] = useState(null);
-    const { user } = useAuth();
     const [selectedDate, setSelectedDate] = useState(null);
     const [exercisesForSelectedDate, setExercisesForSelectedDate] = useState([]);
     const [showModal, setShowModal] = useState(false);
@@ -153,7 +153,6 @@ const ExercisePage = () => {
                         />
                     )}
                 </div>
-
             </div>
         ));
     };
