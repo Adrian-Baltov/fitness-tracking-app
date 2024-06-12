@@ -30,7 +30,7 @@ export function UserProvider({ children }) {
             getUserData(user.uid).then((data) => {
                 setUserData(data);
                 setLoading(false);
-              
+
             }).catch((error) => {
                 setError(error);
                 setLoading(false);
@@ -43,18 +43,39 @@ export function UserProvider({ children }) {
 
 
     // Function to update existing user data
-    const updateUser = (username, data) => {
-        return update(ref(db, `users/${username}`), data);
+    const updateUser = async (username, data) => {
+        try {
+            await update(ref(db, `users/${username}`), data);
+            console.log('User updated successfully');
+        } catch (error) {
+            console.error('Failed to update user:', error);
+        }
     };
 
     // Function to delete a user
-    const deleteUser = (username) => {
-        return remove(ref(db, `users/${username}`));
+    const deleteUser = async (username) => {
+        try {
+            await remove(ref(db, `users/${username}`));
+            console.log('User deleted successfully');
+        } catch (error) {
+            console.error('Failed to delete user:', error);
+        }
     };
 
     // Function to get user by username
-    const getUserByName = (username) => {
-        return get(ref(db, `users/${username}`));
+    const getUserByName = async (username) => {
+        try {
+            const snapshot = await get(ref(db, `users/${username}`));
+            if (snapshot.exists()) {
+                return snapshot.val();
+            } else {
+                console.log('No data available');
+                return null;
+            }
+        } catch (error) {
+            console.error('Error getting user:', error);
+            throw error;
+        }
     };
 
     // Function to create a user 
@@ -63,9 +84,19 @@ export function UserProvider({ children }) {
     };
 
     const getUsers = async () => {
-        const snapshot = await get(ref(db, 'users'));
-        return Object.entries(snapshot.val());
-    }
+        try {
+            const snapshot = await get(ref(db, 'users'));
+            if (snapshot.exists()) {
+                return Object.entries(snapshot.val());
+            } else {
+                console.log('No data available');
+                return [];
+            }
+        } catch (error) {
+            console.error('Error getting users:', error);
+            return [];
+        }
+    };
 
     // Context value containing state and functions
     const valueData = {
