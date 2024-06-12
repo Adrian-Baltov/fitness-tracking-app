@@ -4,8 +4,8 @@ import './friendsPage.css';
 const FriendsPage = () => {
 
     return (
-        <div className="container flex justify-start mt-64 mb-64 " style={{ alignItems: 'center', justifyContent: 'center' }}>
-            <div className='border border-white w-1/2 glass flex flex-col h-96 rounded-lg'>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+            <div className='border border-white glass flex flex-col h-96 rounded-lg' style={{ width: '600px' }}>
                 <div className='m-5 flex-grow overflow-y-auto styled-scrollbar '>
                     <SearchAllUsers />
                 </div>
