@@ -2,9 +2,7 @@ import { useUser } from "../../context/UserContext";
 import { onValue, remove } from "firebase/database";
 import { db } from '../../../firebase/firebase-config.js';
 import { ref } from "firebase/database";
-import { onValue } from "firebase/database";
 import { useState, useEffect } from "react";
-import { useUser } from "../../context/UserContext";
 import { searchFriends } from "../../utils/utils";
 import { removeFriend } from "../../utils/utils";
 
