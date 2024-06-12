@@ -10,3 +10,7 @@ export const phrases = [
     "Stay focused and never quit.",
     "You are doing amazing!"
 ];
+
+export const AUTH_LABEL = 'input input-bordered flex items-center gap-3';
+
+export const AUTH_INPUT = 'login-inputs mt-3';
