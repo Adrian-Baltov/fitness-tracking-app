@@ -1,9 +1,10 @@
 import { useUser } from "../../context/UserContext";
-import { onValue } from "firebase/database";
+import { onValue, remove } from "firebase/database";
 import { db } from '../../../firebase/firebase-config.js';
 import { ref } from "firebase/database";
 import { useState, useEffect } from "react";
 import { searchFriends } from "../../utils/utils";
+import { removeFriend } from "../../utils/utils";
 
 
 
@@ -123,7 +124,7 @@ const FriendsList = () => {
                         </div>
                         
                     </div> : null}
-                    <button className="bg-blue-500 text-white px-2 py-1 rounded-lg m-4">Remove friend</button>
+                    <button className="bg-blue-500 text-white px-2 py-1 rounded-lg m-4" onClick={() => removeFriend(userData.username, friend.username)}>Remove friend</button>
                 </div>
             )) : <p className="mt-20">No friends yet</p>}
            
