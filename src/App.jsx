@@ -45,9 +45,6 @@ function App() {
           <div className={content}></div>
 
           <Routes>
-            {/* <Route path='/dashbaord' element={<div>Home<div className="card-actions justify-end">
-              {!user ? <button onClick={() => navigate('/auth')}>Go to Auth</button> : <><p>Welcome: {userData?.username}</p><button onClick={() => navigate('/user-profile')}>Go to User Profile</button><button onClick={logout}>Logout</button></>}
-            </div></div>} /> */}
             <Route path='/' element={<Dashboard />} />
             <Route path='/user-profile' element={<Authenticated><UserProfile /></Authenticated>} />
             <Route path='/auth' element={<AuthPage />} />
