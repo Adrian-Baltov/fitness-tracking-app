@@ -52,12 +52,18 @@ export function ExerciseProvider({ children }) {
     }, []);
 
     // Function to create a new exercise
-    const createExercise = (data) => {
-        const exerciseRef = ref(db, 'exercises');
-        const userId = user ? user.uid : null;
-        const exerciseDataWithUserId = { ...data, userId };
-        return push(exerciseRef, exerciseDataWithUserId);
+    const createExercise = async (data) => {
+        try {
+            const exerciseRef = ref(db, 'exercises');
+            const userId = user ? user.uid : null;
+            const exerciseDataWithUserId = { ...data, userId };
+            await push(exerciseRef, exerciseDataWithUserId);
+            console.log('Exercise created successfully');
+        } catch (error) {
+            console.error('Failed to create exercise:', error);
+        }
     };
+
 
     // Function to update existing exercise data
     const updateExercise = useCallback((exerciseId, data) => {
