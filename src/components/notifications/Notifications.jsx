@@ -34,7 +34,7 @@ const Notifications = () => {
                     const notificationsList = Object.keys(notificationsData).map(key => ({ ...notificationsData[key] }));
 
                     const newNotifications = notificationsList.some(newNotification => !prevNotifications.some(oldNotification => oldNotification.from === newNotification.from));
-                    if (newNotifications === true) {
+                    if (newNotifications && hasMounted === true && prevNotifications.length <= notificationsList.length) {
                         setShowToast(true);
                     } else {
                         setShowToast(false);
@@ -45,7 +45,6 @@ const Notifications = () => {
                     setNotifications(notificationsList);
                 } else {
                     setNotifications([]);
-
                     setnotificationCount(0);
                 }
             } catch (error) {
@@ -83,17 +82,17 @@ const Notifications = () => {
 
 
             {expandNotifications && (
-                <section className='absolute top-0 right-0 mt-7 bg-white w-64 rounded-lg shadow-lg z-20 p-4'>
+                <section className='fixed top-0 right-20 mt-7 bg-gray-700 w-64 rounded-lg shadow-lg z-10 p-4'>
                     <h2 className="font-bold text-lg mb-4">Notifications</h2>
 
-                    <ul tabIndex={0} className="dropdown-content z-[500] menu p-2 shadow bg-base-100 rounded-box w-52">
+                    <ul  className="p-2 bg-base-100 rounded-box">
                         {notifications.map((notification) => {
                             if (notification.type === 'friendRequest') {
                                 return <FriendNotification notification={notification} key={notification.from} />
                             }
 
                         })}
-
+                        
                         {notifications.length === 0 && <p className='p-4 '>No notifications</p>}
                     </ul>
 

@@ -26,11 +26,13 @@ const FriendNotification = ({ notification }) => {
 
     return (
         <div>
-            <li className='p-4'>You have a new friend request from {from} !</li>
+            <li className='p-4 '>You have a new friend request from {from} !  </li>
              <div className="flex">
-                <button className="btn btn-primary" onClick={() =>  onAccept(from, setFromUserData, fromUserData)}>Accept</button>
-                <button className="btn btn-secondary"  onClick={() =>  onDecline(from, setFromUserData, fromUserData)}>Decline</button>
+                <button className="btn btn-primary mr-2" onClick={() =>  onAccept(from, setFromUserData, fromUserData)}>Accept</button>
+                <br />
+                <button className="btn btn-secondary ml-4"  onClick={() =>  onDecline(from, setFromUserData, fromUserData)}>Decline</button>
              </div>
+          
         </div>
             
        
