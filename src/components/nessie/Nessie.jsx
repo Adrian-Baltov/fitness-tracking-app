@@ -1,4 +1,3 @@
-// src/components/nessie/Nessie.js
 import React, { useEffect, useState } from 'react';
 import styles from './Nessie.module.css';
 
